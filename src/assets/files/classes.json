@@ -1,0 +1,20 @@
+[
+    {
+        "titulo":"Fitness combat",
+        "descripcion":"Clase inspirada en artes marciales",
+        "club": "Cimera",
+        "instructor":"Roberto Sánchez Zepeda",
+        "cupo": 25,
+        "agregados": 0,
+        "restan": 25
+    },
+    {
+        "titulo":"Pilates",
+        "descripcion":"Disciplina combinada que ayuda a fortalecer el cuerpo y mente",
+        "club": "Cimera",
+        "instructor":"Gabriela López Hernández",
+        "cupo": 25,
+        "agregados": 0,
+        "restan": 25
+    } 
+]

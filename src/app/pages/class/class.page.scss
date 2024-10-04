@@ -1,0 +1,35 @@
+.class-button{
+    width: 100%;
+}
+
+.add-button-container{
+    display: flex;
+    justify-content: center;
+    margin-top: 5px;
+}
+
+.title{
+    font-size: 1.6rem;
+}
+
+.card{
+    display: flex;
+    height: 100%;
+    gap: 0.5rem;
+    .content{
+        font-size: 1rem;
+        display: flex;
+        flex-direction: column;
+        flex:1;
+        padding-top: 0.5rem;
+        padding-left: 0.5rem;
+    }
+}
+
+.buttons{
+    display:flex;
+    flex-direction: column;
+    margin-top: 0.5rem;
+    margin-right: 0.5rem;
+    justify-content: center;
+}
