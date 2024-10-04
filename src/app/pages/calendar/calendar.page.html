@@ -1,11 +1,19 @@
-<ion-header [translucent]="true">
+<!--ion-header [translucent]="true">
   <ion-toolbar color="danger">
     <ion-title>Calendario de Clases</ion-title>
   </ion-toolbar>
-</ion-header>
+</ion-header-->
 
 <ion-content [fullscreen]="true">
-  <ion-datetime locale="es-ES">
-    <span slot="time-label">Tiempo</span>
-  </ion-datetime>
+  <div class="calendar">
+    <calendar [eventSource]="eventSource" 
+              [calendarMode]="calendarMode" 
+              [currentDate]="currentDate" 
+              (onEventSelected)="onEventSelected($event)">
+    </calendar>
+
+    <ion-datetime locale="es-ES" (ionChange)="onDateChanged($event)">
+      <span slot="time-label">Tiempo</span>
+    </ion-datetime>
+  </div>
 </ion-content>
