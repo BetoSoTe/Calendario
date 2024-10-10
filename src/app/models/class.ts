@@ -1,4 +1,5 @@
 export interface Class {
+    id:           number;
     titulo:       string;
     descripcion:  string;
     club:         string;

@@ -3,7 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  //ENDPOINT
+  global:'http://localhost:3000/classes', //URL SERVIDOR JSON (simula servidor)
 };
 
 /*

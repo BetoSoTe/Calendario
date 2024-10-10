@@ -1,20 +1,34 @@
-[
+{
+  "classes": [
     {
-        "titulo":"Fitness combat",
-        "descripcion":"Clase inspirada en artes marciales",
-        "club": "Cimera",
-        "instructor":"Roberto Sánchez Zepeda",
-        "cupo": 25,
-        "agregados": 0,
-        "restan": 25
+      "id": "1",
+      "titulo": "Fitness combat",
+      "descripcion": "Clase inspirada en artes marciales mixtas",
+      "club": "CIMERA",
+      "instructor": "Roberto Sánchez Zepeda",
+      "cupo": 25,
+      "agregados": 0,
+      "restan": 25
     },
     {
-        "titulo":"Pilates",
-        "descripcion":"Disciplina combinada que ayuda a fortalecer el cuerpo y mente",
-        "club": "Cimera",
-        "instructor":"Gabriela López Hernández",
-        "cupo": 25,
-        "agregados": 0,
-        "restan": 25
-    } 
-]
+      "id": "2",
+      "titulo": "Pilates",
+      "descripcion": "Disciplina combinada que ayuda a fortalecer el cuerpo y mente",
+      "club": "CIMERA",
+      "instructor": "Gabriela López ",
+      "cupo": 25,
+      "agregados": 0,
+      "restan": 25
+    },
+    {
+      "id": "3",
+      "titulo": "Kick Boxing",
+      "descripcion": "Artes marciales mixtas",
+      "club": "Club Alpha 3",
+      "instructor": "Carlos Alberto Montero",
+      "cupo": 15,
+      "agregados": null,
+      "restan": null
+    }
+  ]
+}

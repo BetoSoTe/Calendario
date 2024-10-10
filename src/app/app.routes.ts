@@ -18,4 +18,9 @@ export const routes: Routes = [
     path: 'folder/Home',
     loadComponent: () => import('./pages/home/home.page').then( m => m.HomePage)
   },
+  {
+    path: 'add-update-class',
+    loadComponent: () => import('./pages/class/add-update-class/add-update-class.page').then( m => m.AddUpdateClassPage)
+  },
+
 ];

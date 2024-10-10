@@ -7,61 +7,59 @@
       debounce="800"
       #searchInput
       placeholder="Buscar clase..."
+      (ionInput)="onSearchChange($event)"
     >
     </ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div class="add-button-container">
-    <ion-button color="success">
-      <ion-icon slot="start" name="add"></ion-icon>
-      Agregar Nueva Clase
-    </ion-button>
-  </div>
+  @if(classes.length > 0){
+    <div class="add-button-container">
+      <ion-button color="success" (click)="onAddUpdateClass()">
+        <ion-icon slot="start" name="add" ></ion-icon>
+        Agregar Nueva Clase
+      </ion-button>
+    </div>
+  }
   <ion-row>
-    <ion-col *ngFor="let class of classes"   sizeMd="6" sizeXs="12">
-      <ion-card class="card">
-          <div class="content">
-            <ion-label color="dark">
-                <h2 class="title">{{class.titulo}}</h2>
-            </ion-label>
-              <ion-label>
-                {{class.descripcion}}
+    @for(class of classes; track class.id){
+      <ion-col sizeMd="6" sizeXs="12">
+        <ion-card class="card">
+            <div class="content">
+              <ion-label color="dark">
+                  <h2 class="title">{{class.titulo}}</h2>
               </ion-label>
-              <ion-label>
-                En {{class.club}}
-              </ion-label>
-              <ion-label>
-                Por {{class.instructor}}
-              </ion-label>
-              <ion-label>
-                Hasta {{class.cupo}} asistentes
-              </ion-label>
-          </div>
-          <div class="buttons">
-            <!-- <ion-row>
-              <ion-button class="class-button">
-                <ion-icon slot="start" name="calendar-outline"></ion-icon>
-                  Agregar Horario
-              </ion-button>
-            </ion-row> -->
-            <ion-row>
-              <ion-button class="class-button">
-                <ion-icon slot="start" name="create-outline"></ion-icon>
-                  Editar Clase
-              </ion-button>
-            </ion-row>
-            <ion-row>
-              <ion-button color="danger" class="class-button">
-                <ion-icon slot="start" name="trash-outline"></ion-icon>
-                  Eliminar clase
-              </ion-button>
-            </ion-row>
-          </div>
-       </ion-card>
-    </ion-col>
-    
+                <ion-label>
+                  {{class.descripcion}}
+                </ion-label>
+                <ion-label>
+                  En {{class.club}}
+                </ion-label>
+                <ion-label>
+                  Por {{class.instructor}}
+                </ion-label>
+                <ion-label>
+                  Hasta {{class.cupo}} asistentes
+                </ion-label>
+            </div>
+            <div class="buttons">
+              <ion-row>
+                <ion-button class="class-button" (click)="onAddUpdateClass(class)">
+                  <ion-icon slot="start" name="create-outline"></ion-icon>
+                    Editar Clase
+                </ion-button>
+              </ion-row>
+              <ion-row>
+                <ion-button color="danger" class="class-button" (click)="onDeleteClass(class.id)">
+                  <ion-icon slot="start" name="trash-outline"></ion-icon>
+                    Eliminar clase
+                </ion-button>
+              </ion-row>
+            </div>
+         </ion-card>
+      </ion-col>
+    }
   </ion-row>
   
 </ion-content>

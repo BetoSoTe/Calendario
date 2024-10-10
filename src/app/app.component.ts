@@ -4,7 +4,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonRouterLink } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, 
-  trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp, add, createOutline, calendarOutline
+  trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp, add, createOutline, calendarOutline, close, home, calendar
 } from 'ionicons/icons';
 
 @Component({
@@ -26,6 +26,9 @@ export class AppComponent {
       add,
       createOutline,
       calendarOutline,
+      close,
+      home,
+      calendar
     });
   }
 }

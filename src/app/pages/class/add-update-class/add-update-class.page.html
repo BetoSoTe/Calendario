@@ -1,0 +1,152 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    @if (clase){
+    <ion-title>Editar Clase</ion-title>
+    }@else{
+      <ion-title>Agregar Clase</ion-title>
+    }
+    <ion-button slot="end" fill="clear" (click)="close()">
+      <ion-icon name="close" ></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+  
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  @if(isLoading){
+    <div class="spinner">
+      <ion-spinner name="circular" ></ion-spinner>
+    </div>
+  }
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" >
+    <!-- titulo -->
+    <ion-item lines="none">
+      <ion-input
+      [formControl]="form.controls.titulo"
+      type="text"
+      label="Nombre de la clase:"
+      placeholder="Clase"
+      label-placement="floating"
+      ></ion-input>
+    </ion-item>
+    @if(form.controls.titulo.errors && form.controls.titulo.touched){
+      <div class="validator">
+        @if(form.controls.titulo.hasError('required')){
+          <div>"El nombre de la clase es requerido"</div>
+        }
+        @if(form.controls.titulo.hasError('maxlength')){
+          <div>"Debe tener máximo 60 caracteres"</div>
+        }
+        @if(form.controls.titulo.hasError('minlength')){
+          <div>"Debe tener al menos 1 letra"</div>
+        }
+      </div>
+    }
+    <!-- descripcion -->
+    <ion-item lines="none">
+      <ion-input
+      [formControl]="form.controls.descripcion"
+      type="text"
+      label="Descripción:"
+      placeholder="Descripción"
+      label-placement="floating"
+      ></ion-input>
+    </ion-item>
+    @if(form.controls.descripcion.errors && form.controls.descripcion.touched){
+      <div class="validator">
+        @if(form.controls.descripcion.hasError('required')){
+          <div>"La descripción de la clase es requerida"</div>
+        }
+        @if(form.controls.descripcion.hasError('maxlength')){
+          <div>"Debe tener máximo 200 caracteres"</div>
+        }
+        @if(form.controls.descripcion.hasError('minlength')){
+          <div>"Debe tener al menos 2 letras"</div>
+        }
+      </div>
+    }
+    <!-- club -->
+    <ion-item lines="none">
+      <ion-label>Lugar:</ion-label>
+      <ion-select interface="popover" placeholder="Escoge un club" [formControl]="form.controls.club">
+        @for(club of clubs; track club.id){
+          <ion-select-option [value]="club.name"  >
+            {{club.name}}
+          </ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+    @if(form.controls.club.errors && form.controls.club.touched){
+      <div class="validator">
+        @if(form.controls.club.hasError('required')){
+          <div>"Seleccionar un club es requerido"</div>
+        }
+    </div>
+    }
+    <!-- instructor -->
+    <ion-item lines="none">
+      <ion-input
+      [formControl]="form.controls.instructor"
+      type="text"
+      label="Nombre del instructor:"
+      placeholder="Instructor"
+      label-placement="floating"
+      ></ion-input>
+    </ion-item>
+    @if(form.controls.instructor.errors && form.controls.instructor.touched){
+      <div class="validator">
+        @if(form.controls.instructor.hasError('required')){
+          <div>"El nombre del instructor es requerido"</div>
+        }
+        @if(form.controls.instructor.hasError('maxlength')){
+          <div>"Debe tener máximo 60 caracteres"</div>
+        }
+        @if(form.controls.instructor.hasError('minlength')){
+          <div>"Debe tener al menos 3 letras"</div>
+        }
+      </div>
+    }
+    <!-- cupo -->
+    <ion-item lines="none">
+      
+      <ion-input
+      [formControl]="form.controls.cupo"
+      type="number"
+      label="Capacidad:"
+      placeholder="Cupo"
+      label-placement="floating"
+      ></ion-input>
+    </ion-item>
+    @if(form.controls.cupo.errors && form.controls.cupo.touched){
+      <div class="validator">
+        @if(form.controls.cupo.hasError('required')){
+          <div>"La cantidad del cupo es requerido"</div>
+        }
+        @if(form.controls.cupo.hasError('maxlength')){
+          <div>"Debe tener capacidad para al menos 1 asistente"</div>
+        }
+    </div>
+    }
+      @if (clase){
+        <ion-button 
+      expand="block"
+      type="submit"
+      [disabled]="form.invalid"
+      >
+        <ion-title>Editar Clase</ion-title>
+      </ion-button>
+      }@else{
+        <ion-button 
+        color="success"
+      expand="block"
+      type="submit"
+      [disabled]="form.invalid"
+      >
+        <ion-title>Agregar Clase</ion-title>
+      </ion-button> 
+      }
+    
+
+  </form>
+</ion-content>
+
