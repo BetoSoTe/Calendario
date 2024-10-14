@@ -122,12 +122,68 @@
         @if(form.controls.cupo.hasError('required')){
           <div>"La cantidad del cupo es requerido"</div>
         }
-        @if(form.controls.cupo.hasError('maxlength')){
+        @if(form.controls.cupo.hasError('min')){
           <div>"Debe tener capacidad para al menos 1 asistente"</div>
+        }
+        @if(form.controls.cupo.hasError('max')){
+          <div>"Debe tener capacidad para máximo 250 asistentes"</div>
         }
     </div>
     }
+    @if(form.hasError('cupoInvalido') && form.touched && clase){
+      <div class="validator">"Debe tener un cupo mayor o igual al número de inscritos."</div>
+    }
       @if (clase){
+        <!-- inscritos -->
+        <ion-item lines="none">
+        <ion-col>
+          <ion-row class="inscritos">
+            Número de inscritos:
+          </ion-row>
+          <ion-row>
+            {{ clase.inscritos}}
+          </ion-row>
+        </ion-col>
+          <!-- <ion-input
+          [formControl]="form.controls.inscritos"
+          type="number"
+          label="Número de inscritos:"
+          placeholder="Inscritos"
+          label-placement="floating"
+          [disabled]="false"
+          ></ion-input> -->
+        </ion-item>
+        <!-- @if(form.controls.inscritos.errors && form.controls.inscritos.touched){
+          <div class="validator">
+            @if(form.controls.inscritos.hasError('required')){
+              <div>"La cantidad del cupo es requerido"</div>
+            }
+            @if(form.controls.inscritos.hasError('inscritosInvalido')){
+              <div>"Debe tener una cantidad menor o igual a la capacidad dependiendo de la capacidad restante "</div>
+            }
+          </div>
+        }  -->
+        <!-- restan -->
+        <ion-item lines="none">
+      
+          <ion-input
+          [formControl]="form.controls.restan"
+          type="number"
+          label="Capacidad restante:"
+          placeholder="Restan"
+          label-placement="floating"
+          ></ion-input>
+        </ion-item>
+        @if(form.controls.restan.errors && (form.controls.restan.touched || form.controls.cupo.touched)){
+          <div class="validator">
+            @if(form.controls.restan.hasError('required')){
+              <div>"La cantidad del cupo es requerido"</div>
+            }
+        </div>
+        } 
+        @if(form.hasError('restanInvalido') && form.touched){
+          <div class="validator">"Debe tener una cantidad menor o igual a la capacidad dependiendo de el número de inscritos "</div>
+        }
         <ion-button 
       expand="block"
       type="submit"

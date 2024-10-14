@@ -5,6 +5,6 @@ export interface Class {
     club:         string;
     instructor:   string;
     cupo:         number;
-    agregados:    number;
+    inscritos:    number;
     restan:       number;
 }
