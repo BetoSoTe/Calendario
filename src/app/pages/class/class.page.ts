@@ -108,7 +108,7 @@ export class ClassPage implements OnInit {
   }
 
   //Agrega o edita una clase, si enviamos la clase como prop al modal, editará si no creará una nueva clase
-  async onAddUpdateClass(clase ?:Class){
+  async onAddUpdateClass(clase?:Class){
     const modal = await this.modalController.create({
       component: AddUpdateClassPage,
       cssClass: 'clases-modal',

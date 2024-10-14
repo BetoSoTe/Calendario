@@ -17,6 +17,7 @@ import { ClassService } from 'src/app/services/class.service';
 })
 export class AddUpdateClassPage implements OnInit {
   @Input() clase?: any;
+  hasClase: boolean = false
   isLoading:boolean = true;
   clubs = [
     {
@@ -50,11 +51,15 @@ export class AddUpdateClassPage implements OnInit {
       inscritos: new FormControl(0,[Validators.required]),
       cupo: new FormControl(null,[Validators.required,Validators.min(1),Validators.max(250)]), 
       restan: new FormControl(0,[Validators.required,Validators.min(0),]),
-  },{validators:[this.validadorRestan, this.validadorCupo]})
+  },{validators:[this.validadorRestan.bind(this), this.validadorCupo]})
 
   ngOnInit() {
-    if (this.clase) this.form.setValue(this.clase);
+    if (this.clase){
+      this.form.setValue(this.clase);
+      this.hasClase = !this.hasClase
+    }
       this.getClasses(); //Obtenemos las clases para poner id a clase mientras se usa JSON server
+      
   }
  // Obtenemos las clases en lo que se implementa base de datos
   getClasses(){
@@ -77,7 +82,7 @@ export class AddUpdateClassPage implements OnInit {
       const cupo = control.get('cupo');
       const inscritos = control.get('inscritos');
       const restan = control.get('restan');
-      return (cupo && inscritos && restan && (restan.value !== cupo.value - inscritos.value)) ? { restanInvalido: true }: null;
+      return (this.clase && cupo && inscritos && restan && (restan.value !== cupo.value - inscritos.value)) ? { restanInvalido: true }: null;
   }
 
   validadorCupo(control: AbstractControl): ValidationErrors | null  {
@@ -118,9 +123,8 @@ export class AddUpdateClassPage implements OnInit {
   async updateClass(){
     this.isLoading= true;
     let clase = this.form.value;  //obtenemos los valores ingresados por el usuario en el formulario
-    clase.id = Number(clase.id) //Nos aseguramos que el id sea un numero
     clase.club = clase.club ? clase.club.trim() : null; //Eliminamos espacios en blanco al principio y al final
-    this.classService.updateClass(this.form.value).subscribe({
+    this.classService.updateClass(clase).subscribe({
       next: (data)=>{
         this.mostrarAlertaOk();
         this.isLoading  = !this.isLoading;  
