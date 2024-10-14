@@ -1,19 +1,33 @@
-<!--ion-header [translucent]="true">
-  <ion-toolbar color="danger">
-    <ion-title>Calendario de Clases</ion-title>
-  </ion-toolbar>
-</ion-header-->
 
 <ion-content [fullscreen]="true">
-  <div class="calendar">
-    <calendar [eventSource]="eventSource" 
-              [calendarMode]="calendarMode" 
-              [currentDate]="currentDate" 
-              (onEventSelected)="onEventSelected($event)">
-    </calendar>
-
-    <ion-datetime locale="es-ES" (ionChange)="onDateChanged($event)">
-      <span slot="time-label">Tiempo</span>
-    </ion-datetime>
+  <ion-segment (ionChange)="segmentChanged($event)" value="mes">
+    <ion-segment-button value="mes">
+      <ion-label>Mes</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="week">
+      <ion-label>Semana</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="dia">
+      <ion-label>Dia</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+  
+  <div *ngIf="selectedSegment === 'mes'">
+    <div class="calendario">
+      <ion-datetime>
+        (ionChange)="dateChanged($event)"
+        (dblclick)="openModal()"
+        presentation="date"
+      </ion-datetime>
+    </div>
   </div>
+  <!--CALENDARIO POR SEMANA-->
+  <div *ngIf="selectedSegment === 'week'">
+    <h2>Calendario por semana</h2>
+  </div>
+  <!--CALENDARIO POR DIA-->
+  <div *ngIf="selectedSegment === 'dia'">
+    <h2>Calendario por dia</h2>
+  </div>
+
 </ion-content>
