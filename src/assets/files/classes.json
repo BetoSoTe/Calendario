@@ -7,7 +7,7 @@
       "club": "CIMERA",
       "instructor": "Roberto Sánchez Zepeda",
       "cupo": 25,
-      "agregados": 0,
+      "inscritos": 0,
       "restan": 25
     },
     {
@@ -15,20 +15,20 @@
       "titulo": "Pilates",
       "descripcion": "Disciplina combinada que ayuda a fortalecer el cuerpo y mente",
       "club": "CIMERA",
-      "instructor": "Gabriela López ",
+      "instructor": "Gabriela López Hernández",
       "cupo": 25,
-      "agregados": 0,
+      "inscritos": 0,
       "restan": 25
     },
     {
       "id": "3",
-      "titulo": "Kick Boxing",
-      "descripcion": "Artes marciales mixtas",
+      "titulo": "kick boxing",
+      "descripcion": "Artes marciales",
       "club": "Club Alpha 3",
-      "instructor": "Carlos Alberto Montero",
-      "cupo": 15,
-      "agregados": null,
-      "restan": null
+      "instructor": "Ricardo Flores",
+      "inscritos": 0,
+      "cupo": 16,
+      "restan": 16
     }
   ]
 }
