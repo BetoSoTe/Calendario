@@ -4,10 +4,10 @@
     <ion-segment-button value="mes">
       <ion-label>Mes</ion-label>
     </ion-segment-button>
-    <ion-segment-button value="week">
+    <ion-segment-button value="week" (click)="setView('week')">
       <ion-label>Semana</ion-label>
     </ion-segment-button>
-    <ion-segment-button value="dia">
+    <ion-segment-button value="dia" (click)="setView('day')">
       <ion-label>Dia</ion-label>
     </ion-segment-button>
   </ion-segment>
@@ -56,13 +56,11 @@
       </ng-template>
     </ion-modal>
   </div>
-  <!-----------------------------------------------CALENDARIO POR SEMANA----------------------------------------------->
-  <div *ngIf="selectedSegment === 'week'">
-    <h2>Calendario por semana</h2>
-  </div>
-  <!-----------------------------------------------CALENDARIO POR DIA----------------------------------------------->
-  <div *ngIf="selectedSegment === 'dia'">
-    <h2>Calendario por dia</h2>
+  <!--CALENDARIO POR SEMANA O DIA-->
+  <div *ngIf="selectedSegment === 'week' || selectedSegment === 'dia'">
+    <sx-calendar [calendarApp]="calendar">
+      <ion-button>Botones</ion-button>
+    </sx-calendar>
   </div>
 
 </ion-content>

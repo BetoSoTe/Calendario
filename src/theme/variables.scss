@@ -1,2 +1,9 @@
 // For information on how to create your own theme, please see:
 // http://ionicframework.com/docs/theming/
+
+//variables calendario
+.is-dark {
+    --sx-color-primary: var(--ion-color-primary-tint);
+    --sx-color-on-primary: #003ca5;
+    --sx-color-primary-container: var(--ion-color-primary);
+  }

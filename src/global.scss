@@ -35,13 +35,35 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+//estilos del calendario
+@import '@schedule-x/theme-default/dist/index.css';
 
+//estilos clase modal
 .clases-modal{
     --height: 30rem;
 }
+
 
 @media (max-width: 776px) {
     .clases-modal{
         --width: 90%;
     }
+}
+
+//estilos calendario
+.sx__calendar-header .sx__date-input {
+    display:none;
+}
+
+.sx__view-selection-selected-item.sx__ripple {
+    display: none;
+}
+
+.sx__week-grid__date-axis{
+    position: sticky;
+    top: 0;
+}
+
+.sx__calendar-wrapper {
+    height: 80vh;
 }
