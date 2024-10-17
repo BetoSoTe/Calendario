@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonDatetime, IonIcon, IonSegment, IonSegmentButton, IonLabel, IonButton, IonModal, IonButtons, IonItem, IonInput } from '@ionic/angular/standalone';
-import { createCalendar, createViewWeek, createViewDay} from "@schedule-x/calendar";
+import { createCalendar, createViewWeek, createViewDay, createViewMonthGrid} from "@schedule-x/calendar";
 import { CalendarComponent } from "@schedule-x/angular";
 import { createCalendarControlsPlugin } from '@schedule-x/calendar-controls'
 import { createScrollControllerPlugin } from '@schedule-x/scroll-controller'
@@ -55,7 +55,7 @@ export class CalendarPage {
         end: '2024-10-16 05:00',
       },
     ],
-    views: [createViewWeek(),createViewDay()],
+    views: [createViewWeek(),createViewDay(),createViewMonthGrid()],
     locale: 'es-ES',
     plugins: [this.calendarControls, this.scrollController]
   })

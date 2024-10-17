@@ -1,7 +1,7 @@
 
 <ion-content [fullscreen]="true">
-  <ion-segment (ionChange)="segmentChanged($event)" value="mes">
-    <ion-segment-button value="mes">
+  <ion-segment (ionChange)="segmentChanged($event)" >
+    <ion-segment-button value="mes" value="mes" (click)="setView('month-grid')">
       <ion-label>Mes</ion-label>
     </ion-segment-button>
     <ion-segment-button value="week" (click)="setView('week')">
@@ -22,45 +22,49 @@
         </ion-buttons>
       </ion-datetime>
     </div>
-    <ion-modal [isOpen]="isModalOpen" class="modal-cal">
-      <ng-template>
-        <ion-header>
-          <ion-toolbar>
-            <ion-buttons slot="start">
-              <ion-button color="medium" (click)="setOpen(false)">Cerrar</ion-button>
-            </ion-buttons>
-            <ion-title>Agregar Clase</ion-title>
-            <ion-buttons slot="end">
-              <ion-button (click)="setOpen(false)" [strong]="true">Aceptar</ion-button>
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-header>
-        <ion-content class="ion-padding">
-          <ion-item>
-            <ion-input labelPlacement="stacked" label="Nombre de la Clase:" [(ngModel)]="clase" placeholder="- - - -"></ion-input><br>
-          </ion-item>
-          <ion-item>
-            <ion-input labelPlacement="stacked" label="Instructor:" [(ngModel)]="name" placeholder="- - - -"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-label>Fecha: </ion-label>
-            <ion-datetime presentation="date" [preferWheel]="true" [(ngModel)]="selectedDate"></ion-datetime>
-          </ion-item>
-          <ion-item>
-            <ion-label>Hora Inicial: </ion-label>
-            <ion-datetime presentation="time" [(ngModel)]="selectedHourInitial"></ion-datetime>
-            <ion-label>Hora Final: </ion-label>
-            <ion-datetime presentation="time" [(ngModel)]="selectedHourFinal"></ion-datetime>
-          </ion-item>
-        </ion-content>
-      </ng-template>
-    </ion-modal>
   </div>
   <!--CALENDARIO POR SEMANA O DIA-->
-  <div *ngIf="selectedSegment === 'week' || selectedSegment === 'dia'">
+  <div >
     <sx-calendar [calendarApp]="calendar">
-      <ion-button>Botones</ion-button>
+      <ng-template #headerContentRightAppend let-arg>
+          <ion-button class="week-day-create-button" fill="Clear" (click)="createEvent(); setOpen(true)">Nueva Clase</ion-button>
+          <ion-button class="week-day-reset-button"  fill="Clear" (click)="reset()">Reset</ion-button>
+      </ng-template>
     </sx-calendar>
   </div>
+  <!-- Modal Nueva Clase -->
+  <ion-modal [isOpen]="isModalOpen" class="modal-cal">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button color="medium" (click)="setOpen(false)">Cerrar</ion-button>
+          </ion-buttons>
+          <ion-title>Agregar Clase</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="setOpen(false)" [strong]="true">Aceptar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-item>
+          <ion-input labelPlacement="stacked" label="Nombre de la Clase:" [(ngModel)]="clase" placeholder="- - - -"></ion-input><br>
+        </ion-item>
+        <ion-item>
+          <ion-input labelPlacement="stacked" label="Instructor:" [(ngModel)]="name" placeholder="- - - -"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label>Fecha: </ion-label>
+          <ion-datetime presentation="date" [preferWheel]="true" [(ngModel)]="selectedDate"></ion-datetime>
+        </ion-item>
+        <ion-item>
+          <ion-label>Hora Inicial: </ion-label>
+          <ion-datetime presentation="time" [(ngModel)]="selectedHourInitial"></ion-datetime>
+          <ion-label>Hora Final: </ion-label>
+          <ion-datetime presentation="time" [(ngModel)]="selectedHourFinal"></ion-datetime>
+        </ion-item>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 
 </ion-content>
