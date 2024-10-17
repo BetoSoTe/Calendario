@@ -12,20 +12,55 @@
     </ion-segment-button>
   </ion-segment>
   
+  <!------------------------------------------------CALENDARIO POR MES------------------------------------------------>
   <div *ngIf="selectedSegment === 'mes'">
     <div class="calendario">
-      <ion-datetime>
-        (ionChange)="dateChanged($event)"
-        (dblclick)="openModal()"
-        presentation="date"
+      <ion-datetime class="cal" presentation="date" [(ngModel)]="selectedDate">
+        <ion-buttons slot="buttons">
+          <ion-button color="primary" (click)="createEvent(); setOpen(true)">Nueva Clase</ion-button>
+          <ion-button color="danger" (click)="reset()">Reset</ion-button>
+        </ion-buttons>
       </ion-datetime>
     </div>
+    <ion-modal [isOpen]="isModalOpen" class="modal-cal">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-buttons slot="start">
+              <ion-button color="medium" (click)="setOpen(false)">Cerrar</ion-button>
+            </ion-buttons>
+            <ion-title>Agregar Clase</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="setOpen(false)" [strong]="true">Aceptar</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content class="ion-padding">
+          <ion-item>
+            <ion-input labelPlacement="stacked" label="Nombre de la Clase:" [(ngModel)]="clase" placeholder="- - - -"></ion-input><br>
+          </ion-item>
+          <ion-item>
+            <ion-input labelPlacement="stacked" label="Instructor:" [(ngModel)]="name" placeholder="- - - -"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label>Fecha: </ion-label>
+            <ion-datetime presentation="date" [preferWheel]="true" [(ngModel)]="selectedDate"></ion-datetime>
+          </ion-item>
+          <ion-item>
+            <ion-label>Hora Inicial: </ion-label>
+            <ion-datetime presentation="time" [(ngModel)]="selectedHourInitial"></ion-datetime>
+            <ion-label>Hora Final: </ion-label>
+            <ion-datetime presentation="time" [(ngModel)]="selectedHourFinal"></ion-datetime>
+          </ion-item>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
   </div>
-  <!--CALENDARIO POR SEMANA-->
+  <!-----------------------------------------------CALENDARIO POR SEMANA----------------------------------------------->
   <div *ngIf="selectedSegment === 'week'">
     <h2>Calendario por semana</h2>
   </div>
-  <!--CALENDARIO POR DIA-->
+  <!-----------------------------------------------CALENDARIO POR DIA----------------------------------------------->
   <div *ngIf="selectedSegment === 'dia'">
     <h2>Calendario por dia</h2>
   </div>
