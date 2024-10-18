@@ -12,33 +12,27 @@
     </ion-segment-button>
   </ion-segment>
   
-  <!------------------------------------------------CALENDARIO POR MES------------------------------------------------>
-  <div *ngIf="selectedSegment === 'mes'">
-    <div class="calendario">
-      <ion-datetime class="cal" presentation="date" [(ngModel)]="selectedDate">
-        <ion-buttons slot="buttons">
-          <ion-button color="primary" (click)="createEvent(); setOpen(true)">Nueva Clase</ion-button>
-          <ion-button color="danger" (click)="reset()">Reset</ion-button>
-        </ion-buttons>
-      </ion-datetime>
-    </div>
-  </div>
   <!--CALENDARIO POR SEMANA O DIA-->
   <div >
     <sx-calendar [calendarApp]="calendar">
       <ng-template #headerContentRightAppend let-arg>
-          <ion-button class="week-day-create-button" fill="Clear" (click)="createEvent(); setOpen(true)">Nueva Clase</ion-button>
-          <ion-button class="week-day-reset-button"  fill="Clear" (click)="reset()">Reset</ion-button>
+          <ion-button class="create-button" fill="Clear" (click)="createEvent(); setOpen(true)">Nueva Clase</ion-button>
+          <ion-button class="reset-button"  fill="Clear" (click)="reset()">Reset</ion-button>
       </ng-template>
+      <ng-template #eventModal>
+        <ion-button class="create-button" fill="Clear" (click)="createEvent(); setOpen(true)">Editar</ion-button>
+        <ion-button class="reset-button"  fill="Clear" (click)="reset()">Eliminar</ion-button>
+    </ng-template>
+
     </sx-calendar>
   </div>
   <!-- Modal Nueva Clase -->
-  <ion-modal [isOpen]="isModalOpen" class="modal-cal">
+  <ion-modal [isOpen]="isModalOpen" (ionModalDidDismiss)="onModalDidDismiss()" class="modal-cal">
     <ng-template>
       <ion-header>
         <ion-toolbar>
           <ion-buttons slot="start">
-            <ion-button color="medium" (click)="setOpen(false)">Cerrar</ion-button>
+            <ion-button color="medium" (click)="setOpen(false);" >Cerrar</ion-button>
           </ion-buttons>
           <ion-title>Agregar Clase</ion-title>
           <ion-buttons slot="end">
@@ -55,7 +49,7 @@
         </ion-item>
         <ion-item>
           <ion-label>Fecha: </ion-label>
-          <ion-datetime presentation="date" [preferWheel]="true" [(ngModel)]="selectedDate"></ion-datetime>
+          <ion-datetime presentation="date" [preferWheel]="true" [(ngModel)]="selectedDate" min="2020-01-01" max="2030-12-31"></ion-datetime>
         </ion-item>
         <ion-item>
           <ion-label>Hora Inicial: </ion-label>

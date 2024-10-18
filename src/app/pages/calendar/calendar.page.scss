@@ -20,11 +20,13 @@ ion-segment-button {
   --width: 50%;
 }
 
-.week-day-create-button{
+.create-button{
   color: var(--ion-color-primary);
+  --background: var(--ion-background-color-step-100);
 }
 
-.week-day-reset-button{
+.reset-button{
   color: var(--ion-color-danger);
+  --background: var(--ion-background-color-step-100);
 }
 
