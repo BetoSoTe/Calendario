@@ -1,7 +1,7 @@
 
 <ion-content [fullscreen]="true">
   <ion-segment (ionChange)="segmentChanged($event)" >
-    <ion-segment-button value="mes" value="mes" (click)="setView('month-grid')">
+    <ion-segment-button value="mes" (click)="setView('month-grid')">
       <ion-label>Mes</ion-label>
     </ion-segment-button>
     <ion-segment-button value="week" (click)="setView('week')">
@@ -20,8 +20,56 @@
           <ion-button class="reset-button"  fill="Clear" (click)="reset()">Reset</ion-button>
       </ng-template>
       <ng-template #eventModal>
-        <ion-button class="create-button" fill="Clear" (click)="createEvent(); setOpen(true)">Editar</ion-button>
-        <ion-button class="reset-button"  fill="Clear" (click)="reset()">Eliminar</ion-button>
+        <ion-buttons slot="start">
+          <ion-button color="medium" (click)="onCloseEventModal();" >
+            <ion-icon name="close"></ion-icon>
+            Cerrar
+          </ion-button>
+        </ion-buttons>
+        <ion-list lines="none">
+          <ion-item>
+            <ion-label>{{ selectedClaseHorario?.titulo }}</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-icon name="time-outline" class="even-modal-text"></ion-icon>
+            <ion-label>
+              <p>
+                {{selectedHorario?.horaInicio}} - {{selectedHorario?.horaFin}}
+              </p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-icon name="location-outline"></ion-icon>
+            <ion-label>
+              <p>
+                {{selectedClaseHorario?.club}}
+              </p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-icon name="person-outline"></ion-icon>
+            <ion-label><p>{{selectedClaseHorario?.instructor}}</p></ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-icon name="refresh-outline"></ion-icon>
+            <ion-label><p>{{selectedHorario?.frecuencia}}</p></ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+              Cupo: <p>{{selectedClaseHorario?.cupo}}</p>
+            </ion-label>
+            <ion-label>
+              Inscritos: <p>{{selectedClaseHorario?.inscritos}}</p>
+            </ion-label>
+            <ion-label>
+              Restan: <p>{{selectedClaseHorario?.restan}}</p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-button class="create-button" fill="Clear" (click)="createEvent(); setOpen(true)">Editar</ion-button>
+            <ion-button class="reset-button"  fill="Clear" (click)="reset()">Eliminar</ion-button>
+          </ion-item>
+        </ion-list>
     </ng-template>
 
     </sx-calendar>

@@ -51,18 +51,14 @@
 }
 
 //estilos calendario
-.sx__calendar-header .sx__date-input {
-    display:none;
-}
+// .sx__calendar-header .sx__date-input {
+//     display:none;
+// }
 
 .sx__view-selection-selected-item.sx__ripple {
     display: none;
 }
 
-.sx__week-grid__date-axis{
-    position: sticky;
-    top: 0;
-}
 
 .sx__calendar-wrapper {
     height: 80vh;

@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   //ENDPOINT
-  global:'http://localhost:3000/classes', //URL SERVIDOR JSON (simula servidor)
+  global:'http://localhost:3000/', //URL SERVIDOR JSON (simula servidor)
 };
 
 /*

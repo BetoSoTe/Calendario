@@ -13,19 +13,19 @@ export class ClassService {
   constructor(private http: HttpClient) { }
 
   getClasses():Observable<Class[]>{
-    return this.http.get<Class[]>(environment.global);
+    return this.http.get<Class[]>(environment.global+'classes');
   }
 
   addClass(clase:any){
-    return this.http.post<any>(environment.global, JSON.stringify(clase));
+    return this.http.post<any>(environment.global+'classes', JSON.stringify(clase));
   }
 
   updateClass(clase:any){
     console.log('update',clase)
-    return this.http.put<any>(`${environment.global}/${clase.id}`, JSON.stringify(clase));
+    return this.http.put<any>(`${environment.global+'classes'}/${clase.id}`, JSON.stringify(clase));
   }
 
   deleteClass(id: number): Observable<any> {
-    return this.http.delete<any>(`${environment.global}/${id}`);
+    return this.http.delete<any>(`${environment.global+'classes'}/${id}`);
   }
 }

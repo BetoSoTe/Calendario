@@ -4,7 +4,7 @@
       "id": "1",
       "titulo": "Fitness combat",
       "descripcion": "Clase inspirada en artes marciales mixtas",
-      "club": "Club Alpha 2",
+      "club": "Club Alpha 3",
       "instructor": "Roberto Sánchez Zepeda",
       "inscritos": 0,
       "cupo": 25,
@@ -29,6 +29,80 @@
       "inscritos": 0,
       "cupo": 18,
       "restan": 18
+    }
+  ],
+  "horariosClases": [
+    {
+      "id": "1",
+      "idClase": 1,
+      "fecha": "2024-10-21",
+      "fechaHasta": "2024-10-22",
+      "horaInicio": "03:00",
+      "horaFin": "04:00",
+      "frecuencia": "Una vez"
+    },
+    {
+      "id": "2",
+      "idClase": 1,
+      "fecha": "2024-10-23",
+      "fechaHasta": "2024-11-22",
+      "horaInicio": "03:10",
+      "horaFin": "04:10",
+      "frecuencia": "Diario"
+    },
+    {
+      "id": "3",
+      "idClase": 2,
+      "fecha": "2024-10-22",
+      "fechaHasta": "2024-11-23",
+      "horaInicio": "02:00",
+      "horaFin": "06:00",
+      "frecuencia": "Semanal"
+    },
+    {
+      "id": "4",
+      "idClase": 3,
+      "fecha": "2024-10-22",
+      "fechaHasta": "2024-12-24",
+      "horaInicio": "02:00",
+      "horaFin": "06:00",
+      "frecuencia": "Mensual"
+    },
+    {
+      "id": "5",
+      "idClase": 1,
+      "fecha": "2024-10-25",
+      "fechaHasta": "2024-10-21",
+      "horaInicio": "03:00",
+      "horaFin": "04:00",
+      "frecuencia": "Una vez"
+    },
+    {
+      "id": "6",
+      "idClase": 1,
+      "fecha": "2024-10-26",
+      "fechaHasta": "2024-11-22",
+      "horaInicio": "03:10",
+      "horaFin": "04:00",
+      "frecuencia": "Diario"
+    },
+    {
+      "id": "7",
+      "idClase": 2,
+      "fecha": "2024-10-24",
+      "fechaHasta": "2024-11-23",
+      "horaInicio": "02:00",
+      "horaFin": "06:00",
+      "frecuencia": "Semanal"
+    },
+    {
+      "id": "8",
+      "idClase": 3,
+      "fecha": "2024-10-25",
+      "fechaHasta": "2024-12-24",
+      "horaInicio": "02:00",
+      "horaFin": "06:00",
+      "frecuencia": "Mensual"
     }
   ]
 }
