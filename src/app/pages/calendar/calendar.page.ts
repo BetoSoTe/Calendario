@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonDatetime, IonIcon, IonSegment, IonSegmentButton, IonLabel, IonButton, IonModal, IonButtons, IonItem, IonInput, IonList, IonText } from '@ionic/angular/standalone';
@@ -18,6 +18,7 @@ import { Class } from 'src/app/models/class';
   templateUrl: './calendar.page.html',
   styleUrls: ['./calendar.page.scss'],
   standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [IonText, IonList, IonInput, IonItem, IonButtons, IonModal, IonButton, IonLabel, IonSegmentButton, IonSegment, IonIcon, IonDatetime, 
     IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule,CalendarComponent /*NgCalendarModule*/]
 })
@@ -27,7 +28,8 @@ export class CalendarPage {
 
   //-----Modal
   isModalOpen = false;
-  selectedDate: string = '';
+  selectedDateInitial: string = '';
+  selectedDateFinal: string = '';
   selectedHourInitial: string = '';
   selectedHourFinal: string = '';
   name: string = ''; clase: string = '';
@@ -56,8 +58,13 @@ export class CalendarPage {
     callbacks: {
       onDoubleClickDateTime: (dateTime) => {
         this.selectedDateTime = dateTime; // Guarda la fecha seleccionada
-        this.createEvent(); // Llama a la función dentro del componente
+        //this.createEvent(); // Llama a la función dentro del componente
         this.setOpen(true); // Lógica para abrir el modal o diálogo
+      },
+      onDoubleClickDate: (dateTime) => {
+        this.selectedDateInitial = dateTime;
+        //this.createEvent();
+        this.setOpen(true);
       },
       onEventClick:(calendarEvent) => {
         this.selectedHorario = this.buscarHorario(Number(calendarEvent.id)) 
@@ -72,7 +79,6 @@ export class CalendarPage {
   ngOnInit() {
     this.getData();
     this.setView('month-grid');
-    
   }
 
   getData(){
@@ -149,7 +155,7 @@ export class CalendarPage {
 
 
  //---
-  createEvent() {
+  /*createEvent() {
     if (this.selectedDate) {
       console.log(this.selectedDate)
       const eventDate = new Date(this.selectedDate);
@@ -158,12 +164,13 @@ export class CalendarPage {
     } else {
       console.log('Por favor, selecciona una fecha.');
     }
-  }
+  }*/
 
   confirm() {
     console.log("Clase: ", this.clase);
     console.log("Instructor: ", this.name);
-    console.log("Fecha seleccionada: ", this.selectedDate);
+    console.log("Fecha Inicial seleccionada: ", this.selectedDateInitial);
+    console.log("Fecha Final seleccionada: ", this.selectedDateFinal);
     console.log("Hora Inicialseleccionada: ", this.selectedHourInitial);
     console.log("Hora Final seleccionada: ", this.selectedHourFinal)
     this.setOpen(false);
@@ -176,7 +183,8 @@ export class CalendarPage {
       //Al abrir el modal colocamos la fecha y la hora seleccionada.
       if(this.selectedDateTime){
         const [datePart, timePart] = this.selectedDateTime.split(' ')
-        this.selectedDate = datePart;
+        this.selectedDateInitial = datePart;
+        this.selectedDateFinal = datePart;
         this.selectedHourInitial = timePart;
         this.selectedHourFinal = timePart;
       }
@@ -189,7 +197,7 @@ export class CalendarPage {
   }
 
   reset() {
-    this.selectedDate = new Date().toISOString();
+    this.selectedDateInitial = new Date().toISOString();
     this.clase = '';
     this.name = '';
   }

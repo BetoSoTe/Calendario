@@ -16,7 +16,7 @@
   <div >
     <sx-calendar [calendarApp]="calendar">
       <ng-template #headerContentRightAppend let-arg>
-          <ion-button class="create-button" fill="Clear" (click)="createEvent(); setOpen(true)">Nueva Clase</ion-button>
+          <ion-button class="create-button" fill="Clear" (click)="setOpen(true)">Nueva Clase</ion-button>
           <ion-button class="reset-button"  fill="Clear" (click)="reset()">Reset</ion-button>
       </ng-template>
       <ng-template #eventModal>
@@ -66,7 +66,7 @@
             </ion-label>
           </ion-item>
           <ion-item>
-            <ion-button class="create-button" fill="Clear" (click)="createEvent(); setOpen(true)">Editar</ion-button>
+            <ion-button class="create-button" fill="Clear" (click)="setOpen(true)">Editar</ion-button>
             <ion-button class="reset-button"  fill="Clear" (click)="reset()">Eliminar</ion-button>
           </ion-item>
         </ion-list>
@@ -77,17 +77,12 @@
   <!-- Modal Nueva Clase -->
   <ion-modal [isOpen]="isModalOpen" (ionModalDidDismiss)="onModalDidDismiss()" class="modal-cal">
     <ng-template>
-      <ion-header>
+      <ion-header class="modal-header">
         <ion-toolbar>
-          <ion-buttons slot="start">
-            <ion-button color="medium" (click)="setOpen(false);" >Cerrar</ion-button>
-          </ion-buttons>
           <ion-title>Agregar Clase</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="setOpen(false)" [strong]="true">Aceptar</ion-button>
-          </ion-buttons>
         </ion-toolbar>
       </ion-header>
+
       <ion-content class="ion-padding">
         <ion-item>
           <ion-input labelPlacement="stacked" label="Nombre de la Clase:" [(ngModel)]="clase" placeholder="- - - -"></ion-input><br>
@@ -96,16 +91,37 @@
           <ion-input labelPlacement="stacked" label="Instructor:" [(ngModel)]="name" placeholder="- - - -"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-label>Fecha: </ion-label>
-          <ion-datetime presentation="date" [preferWheel]="true" [(ngModel)]="selectedDate" min="2020-01-01" max="2030-12-31"></ion-datetime>
+          <ion-select label="Frecuencia: ">
+            <ion-select-option value="once">Una vez</ion-select-option>
+            <ion-select-option value="dialy">Diario</ion-select-option>
+            <ion-select-option value="weekly">Semanal</ion-select-option>
+            <ion-select-option value="monthly">Mensual</ion-select-option>
+          </ion-select>
         </ion-item>
         <ion-item>
+          <ion-label>Fecha Inicial: </ion-label>
+          <ion-datetime presentation="date" [preferWheel]="true" [(ngModel)]="selectedDateInitial" min="2020-01-01" max="2030-12-31"></ion-datetime>
           <ion-label>Hora Inicial: </ion-label>
           <ion-datetime presentation="time" [(ngModel)]="selectedHourInitial"></ion-datetime>
+        </ion-item>
+        <ion-item>
+          <ion-label>Fecha Final: </ion-label>
+          <ion-datetime presentation="date" [preferWheel]="true" [(ngModel)]="selectedDateFinal" min="2020-01-01" max="2030-12-31"></ion-datetime>
           <ion-label>Hora Final: </ion-label>
           <ion-datetime presentation="time" [(ngModel)]="selectedHourFinal"></ion-datetime>
         </ion-item>
       </ion-content>
+
+      <ion-footer>
+        <ion-toolbar>
+          <ion-buttons slot="end">
+            <ion-button class="accept-btn" (click)="setOpen(false)" [strong]="true">Aceptar</ion-button>
+          </ion-buttons>
+          <ion-buttons slot="end">
+            <ion-button class="close-btn" (click)="setOpen(false)" >Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-footer>
     </ng-template>
   </ion-modal>
 
