@@ -6,12 +6,13 @@ import { createCalendar, createViewWeek, createViewDay, createViewMonthGrid, vie
 import { CalendarComponent } from "@schedule-x/angular";
 import { createCalendarControlsPlugin } from '@schedule-x/calendar-controls'
 import { createScrollControllerPlugin } from '@schedule-x/scroll-controller'
-import { createEventsServicePlugin } from '@schedule-x/events-service'
+// import { createEventsServicePlugin } from '@schedule-x/events-service'
 import { createEventModalPlugin } from '@schedule-x/event-modal'
 import { HorariosClasesService } from 'src/app/services/horarios-clases.service';
 import { HorarioClase } from 'src/app/models/horarioClase';
 import { ClassService } from 'src/app/services/class.service';
 import { Class } from 'src/app/models/class';
+import { createEventRecurrencePlugin, createEventsServicePlugin } from "@schedule-x/event-recurrence";
 
 @Component({
   selector: 'app-calendar',
@@ -54,7 +55,7 @@ export class CalendarPage {
     monthGridOptions: {
       nEventsPerDay: 5
     },
-    plugins: [this.calendarControls, this.scrollController, this.eventsServicePlugin,this.eventModal],
+    plugins: [this.calendarControls, this.scrollController, this.eventsServicePlugin,this.eventModal, createEventRecurrencePlugin()],
     callbacks: {
       onDoubleClickDateTime: (dateTime) => {
         this.selectedDateTime = dateTime; // Guarda la fecha seleccionada
@@ -112,34 +113,53 @@ export class CalendarPage {
   intercambiarHorarioPorEvento(){
     this.events = this.horariosClases.map((horario)=>{
       //creamos un evento vacio
-      const evento={
+      const evento = {
         id: 0,
         title: "",
         start: "",
         end: "",
         location: "",
         people: [""],
+        rrule: ""
       }
-      //buscamos la clase con la id de la clase que esta en el horario
+      
+      //buscamos la clase con la id que esta en el horario
       const clase = this.buscarClase(horario.idClase)
-      //creamos la fecha con hora inicial y final que es como lo acepta el calendario
+      //ponemos la fecha con hora inicial y final que es como lo acepta el calendario
       const start = horario.fecha+' '+horario.horaInicio;
       const end = horario.fecha+' '+horario.horaFin;
-      
-      //agregamos los respectivos datos al evento
-      evento.id = Number(horario.id)
-      evento.start = start
-      evento.end = end
+      //Ponemos la frecuencia como la acepta el calendario
+      if (horario.frecuencia !== "Una vez") evento.rrule = this.intercambiarFrecuencia(horario.frecuencia) +  this.convertirFecha(horario.fechaHasta);
+      //agregamos los respectivos datos al evento como lo acepta el calendario
+      evento.id = Number(horario.id);
+      evento.start = start;
+      evento.end = end;
       if (clase){
         evento.title = clase.titulo;
         evento.location = clase.club;
         evento.people = [clase.instructor];
       }
-
       return evento;
-    }).sort((a, b) => a.start.localeCompare(b.start))
+    }).sort((a, b) => {
+      const [datePartA, timePartA] = a.start.split(' ')
+      const [datePartB, timePartB] = b.start.split(' ')
+      return timePartA.localeCompare(timePartB)
+    })
   }
-
+  //Quita los guiones a la fecha a como lo acepta rrule
+  convertirFecha(fecha:string){
+    return ';UNTIL=' + fecha.replace(/-/g, '') + 'T235959'; 
+  }
+//Intercambiamos la frecuencia a como la acepta rrule
+  intercambiarFrecuencia(frecuencia: string){
+    const rrule: Record<string, string> = {
+      Diario: "FREQ=DAILY",
+      Semanal: "FREQ=WEEKLY",
+      Mensual: "FREQ=MONTHLY",
+      default: ""
+    };
+    return rrule[frecuencia] ?? rrule['default'];
+  }
   //Busca la clase para obtener los datos a poner en el evento.
   buscarClase(id:number){
     return this.allClasses.find((clase)=> Number(clase.id) === id);
