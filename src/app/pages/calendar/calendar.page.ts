@@ -1,6 +1,6 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonDatetime, IonIcon, IonSegment, IonSegmentButton, IonLabel, IonButton, IonModal, IonButtons, IonItem, IonInput, IonList, IonText } from '@ionic/angular/standalone';
 import { createCalendar, createViewWeek, createViewDay, createViewMonthGrid, viewMonthGrid, CalendarEvent} from "@schedule-x/calendar";
 import { CalendarComponent } from "@schedule-x/angular";
@@ -33,8 +33,8 @@ export class CalendarPage {
   allClasses: Class[] = [];
   //------Select con autocompletado
   filteredClases?: Observable<Class[]>;;
-  control = new FormControl('');
-
+  form = new FormControl('',[Validators.required]);
+  filteredClass? : Observable<Class | undefined>;
   //-----Modal
   isModalOpen = false;
   selectedDateInitial: string = '';
@@ -88,10 +88,12 @@ export class CalendarPage {
   ngOnInit() {
     this.getData();
     this.setView('month-grid');
-    this.filteredClases = this.control.valueChanges.pipe(
+    this.filteredClases = this.form.valueChanges.pipe(
       startWith(''),
       map(value => this._filter(value || '')),
     );
+    this.filteredClass = this.form.valueChanges.pipe(
+      map(value => this.buscarClase(Number(value))));
   }
 
   getData(){
@@ -250,4 +252,10 @@ export class CalendarPage {
     return this.allClasses.filter(clase => clase.titulo.toLowerCase().includes(filterValue))
 
   }
+
+  validadorClase(){
+    
+  }
+
+  
 }
