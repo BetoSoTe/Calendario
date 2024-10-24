@@ -84,8 +84,25 @@
       </ion-header>
 
       <ion-content class="ion-padding">
+        <ion-item class="autocomplete-container">
+          <!-- <ion-input labelPlacement="stacked" label="Nombre de la Clase:" [(ngModel)]="clase" placeholder="- - - -"></ion-input><br> -->
+          <mat-form-field class="full-width">
+            <mat-label>Clase:</mat-label>
+            <input type="text"
+                   placeholder="- - - -"
+                   aria-label="Number"
+                   matInput
+                   [formControl]="control"
+                   [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete">
+              @for (clase of filteredClases | async; track clase.id) {
+                <mat-option [value]="clase.id">{{clase.id}} - {{clase.titulo}} - {{clase.instructor}} - {{clase.club}}</mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+        </ion-item>
         <ion-item>
-          <ion-input labelPlacement="stacked" label="Nombre de la Clase:" [(ngModel)]="clase" placeholder="- - - -"></ion-input><br>
+          
         </ion-item>
         <ion-item>
           <ion-input labelPlacement="stacked" label="Instructor:" [(ngModel)]="name" placeholder="- - - -"></ion-input>

@@ -8,7 +8,6 @@
  * For more information on global stylesheets, visit the documentation:
  * https://ionicframework.com/docs/layout/global-stylesheets
  */
-
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
 
@@ -50,10 +49,6 @@
     }
 }
 
-//estilos calendario
-// .sx__calendar-header .sx__date-input {
-//     display:none;
-// }
 
 .sx__view-selection-selected-item.sx__ripple {
     display: none;
@@ -62,4 +57,18 @@
 
 .sx__calendar-wrapper {
     height: 80vh;
+}
+//estilos angular material select autocomplete
+html {
+    --mat-autocomplete-background-color:var(--ion-background-color-step-100);
+    --mat-option-label-text-color: white;
+    --mat-autocomplete-placeholder-color: white;
+}
+
+input.mat-mdc-autocomplete-trigger::placeholder {
+    color:white;
+}
+
+input.mat-mdc-autocomplete-trigger:active{ 
+    border:none !important;
 }

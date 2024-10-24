@@ -29,6 +29,16 @@
       "inscritos": 0,
       "cupo": 18,
       "restan": 18
+    },
+    {
+      "id": 4,
+      "titulo": "Box",
+      "descripcion": "Clases de box",
+      "club": "Club Alpha 2",
+      "instructor": "Mariana Sanchez",
+      "inscritos": 0,
+      "cupo": 12,
+      "restan": 12
     }
   ],
   "horariosClases": [

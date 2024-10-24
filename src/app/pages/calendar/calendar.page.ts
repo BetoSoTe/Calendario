@@ -1,6 +1,6 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonDatetime, IonIcon, IonSegment, IonSegmentButton, IonLabel, IonButton, IonModal, IonButtons, IonItem, IonInput, IonList, IonText } from '@ionic/angular/standalone';
 import { createCalendar, createViewWeek, createViewDay, createViewMonthGrid, viewMonthGrid, CalendarEvent} from "@schedule-x/calendar";
 import { CalendarComponent } from "@schedule-x/angular";
@@ -14,6 +14,11 @@ import { ClassService } from 'src/app/services/class.service';
 import { Class } from 'src/app/models/class';
 import { createEventRecurrencePlugin, createEventsServicePlugin } from "@schedule-x/event-recurrence";
 
+import { map,startWith,debounceTime } from 'rxjs/operators'
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import { MatAutocompleteModule } from '@angular/material/autocomplete'
+import { Observable } from 'rxjs';
+
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.page.html',
@@ -21,11 +26,14 @@ import { createEventRecurrencePlugin, createEventsServicePlugin } from "@schedul
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [IonText, IonList, IonInput, IonItem, IonButtons, IonModal, IonButton, IonLabel, IonSegmentButton, IonSegment, IonIcon, IonDatetime, 
-    IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule,CalendarComponent /*NgCalendarModule*/]
+    IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule,CalendarComponent,ReactiveFormsModule, MatAutocompleteModule /*NgCalendarModule*/]
 })
 export class CalendarPage {
   selectedSegment: string = 'mes';
   allClasses: Class[] = [];
+  //------Select con autocompletado
+  filteredClases?: Observable<Class[]>;;
+  control = new FormControl('');
 
   //-----Modal
   isModalOpen = false;
@@ -80,6 +88,10 @@ export class CalendarPage {
   ngOnInit() {
     this.getData();
     this.setView('month-grid');
+    this.filteredClases = this.control.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value || '')),
+    );
   }
 
   getData(){
@@ -229,5 +241,13 @@ export class CalendarPage {
 
   onCloseEventModal(){
     this.eventModal.close()
+  }
+
+  //Select con autocompletado
+  private _filter(value:string):Class[]{
+    const filterValue = value.toLocaleLowerCase();
+
+    return this.allClasses.filter(clase => clase.titulo.toLowerCase().includes(filterValue))
+
   }
 }

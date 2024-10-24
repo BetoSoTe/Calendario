@@ -76,3 +76,34 @@ ion-item {
 ion-datetime{
   --color: #333;
 }
+.autocomplete-container{
+  width: 100%;
+}
+
+
+//estilos angular material select autocomplete
+
+::ng-deep mat-option.mat-mdc-option { 
+  border-bottom: #fff solid 1px; 
+  margin-bottom: 3px;
+  padding-bottom: 3px;
+ }
+
+ .full-width {
+  width: 100%;
+}
+
+::ng-deep input.mat-mdc-autocomplete-trigger { 
+  border:none;
+  color: white;
+  background-color: transparent;
+  width: 100%;
+}
+
+::ng-deep input.mat-mdc-autocomplete-trigger .ng-touched .ng-pristine .ng-valid:focus{ 
+  border:none !important;
+  box-shadow: 0 0 2em 0.1em #006EFF;
+}
+// input:placeholder-shown {
+//   opacity: 0.5;
+// }
