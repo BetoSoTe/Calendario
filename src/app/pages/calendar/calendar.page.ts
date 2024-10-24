@@ -277,4 +277,5 @@ export class CalendarPage {
       this.selectedDateInitial = data.selectedDate; // Actualiza con la fecha seleccionada
     }
   }
+  
 }

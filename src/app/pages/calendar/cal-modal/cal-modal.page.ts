@@ -12,7 +12,6 @@ import { IonicModule } from '@ionic/angular';
 })
 export class CalModalPage {
   selectedDate: string | null = null;
-
   constructor(private modalController: ModalController) {}
 
   onDateChange(event: any) {
