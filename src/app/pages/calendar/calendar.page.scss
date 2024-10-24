@@ -10,6 +10,7 @@ ion-segment-button {
   //align-items: center;
   //height: 100vh;
 }
+
 .cal {
   width: 100%;
   max-width: 300px;
@@ -19,21 +20,31 @@ ion-segment-button {
 .modal-cal {
   --width: 50%;
 }
-
-.create-button{
+/*************************************BOTONES DE LOS EVENTOS***************************************/
+.create-button{ //CREAR EVENTO
   color: var(--ion-color-primary);
   --background: var(--ion-background-color-step-100);
 }
 
-.reset-button{
+.reset-button{ //RESETEAR EVENTO
   color: var(--ion-color-danger);
   --background: var(--ion-background-color-step-100);
 }
 
+.edit-button { //EDITAR EVENTO
+  color: #05b10b;
+  --background: var(--ion-background-color-step-100);
+}
+
+.cancel-button { //CANCELAR / ELIMINAR EVENTO
+  color: var(--ion-color-danger);
+  --background: var(--ion-background-color-step-100);
+}
+/*************************************MODAL***************************************/
 .event-modal-text{
   --margin-right: 1rem;
 }
-
+/*************************************MODAL***************************************/
 .modal-cal {
   --width: 50%;
   --height: 80%;
@@ -46,7 +57,7 @@ ion-segment-button {
   color: white;
   text-align: center;
 }
-
+/*************************************BOTONES DEL MODAL***************************************/
 .close-btn {
   color: #f44336;
   border:2px solid #f44336;
@@ -69,20 +80,15 @@ ion-segment-button {
   border-radius: 10px;
 }
 
-ion-item {
-  --border-color: transparent;
-}
-
 ion-datetime{
   --color: #333;
 }
+
 .autocomplete-container{
   width: 100%;
 }
 
-
 //estilos angular material select autocomplete
-
 ::ng-deep mat-option.mat-mdc-option { 
   border-bottom: #fff solid 1px; 
   margin-bottom: 3px;

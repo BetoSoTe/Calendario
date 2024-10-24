@@ -21,6 +21,10 @@ export const routes: Routes = [
   {
     path: 'add-update-class',
     loadComponent: () => import('./pages/class/add-update-class/add-update-class.page').then( m => m.AddUpdateClassPage)
+  },  {
+    path: 'cal-modal',
+    loadComponent: () => import('./pages/calendar/cal-modal/cal-modal.page').then( m => m.CalModalPage)
   },
+
 
 ];

@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Seleccionar Fecha</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-datetime displayFormat="DD-MM-YYYY" 
+                [(ngModel)]="selectedDate" 
+                (ionChange)="onDateChange($event)">
+  </ion-datetime>
+  <ion-button expand="full" (click)="closeModal()">Confirmar</ion-button>
+</ion-content>

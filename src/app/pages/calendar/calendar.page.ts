@@ -13,6 +13,8 @@ import { HorarioClase } from 'src/app/models/horarioClase';
 import { ClassService } from 'src/app/services/class.service';
 import { Class } from 'src/app/models/class';
 import { createEventRecurrencePlugin, createEventsServicePlugin } from "@schedule-x/event-recurrence";
+import { ModalController } from '@ionic/angular';
+import { CalModalPage } from './cal-modal/cal-modal.page';
 
 import { map,startWith,debounceTime } from 'rxjs/operators'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
@@ -25,8 +27,13 @@ import { Observable } from 'rxjs';
   styleUrls: ['./calendar.page.scss'],
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [IonText, IonList, IonInput, IonItem, IonButtons, IonModal, IonButton, IonLabel, IonSegmentButton, IonSegment, IonIcon, IonDatetime, 
-    IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule,CalendarComponent,ReactiveFormsModule, MatAutocompleteModule /*NgCalendarModule*/]
+  imports: [IonText, IonList, IonInput, IonItem,
+            IonButtons, IonModal, IonButton, IonLabel,
+            IonSegmentButton, IonSegment, IonIcon, IonDatetime, 
+            IonContent, IonHeader, IonTitle, IonToolbar,
+            CommonModule, FormsModule, CalendarComponent, ReactiveFormsModule,
+            MatAutocompleteModule /*NgCalendarModule*/],
+  providers: [ModalController]
 })
 export class CalendarPage {
   selectedSegment: string = 'mes';
@@ -37,11 +44,12 @@ export class CalendarPage {
   filteredClass? : Observable<Class | undefined>;
   //-----Modal
   isModalOpen = false;
-  selectedDateInitial: string = '';
-  selectedDateFinal: string = '';
-  selectedHourInitial: string = '';
-  selectedHourFinal: string = '';
-  name: string = ''; clase: string = '';
+  name: string = ''; clase: string = ''; //Nombre y Clase
+  selectedFrequency: string = ''; // Frecuencia seleccionada
+  selectedDateInitial: string = ''; // Fecha inicial
+  selectedDateFinal: string = ''; // Fecha final
+  selectedHourInitial: string = ''; // Hora inicial
+  selectedHourFinal: string = ''; // Hora final
   selectedHorario?: HorarioClase;
   selectedClaseHorario?: Class;
 
@@ -82,8 +90,9 @@ export class CalendarPage {
     }
   })
 
-
-  constructor(private horariosClasesService: HorariosClasesService, private classService: ClassService) { }
+  constructor(private horariosClasesService: HorariosClasesService,
+              private classService: ClassService,
+              private modalControl: ModalController) { }
 
   ngOnInit() {
     this.getData();
@@ -118,10 +127,8 @@ export class CalendarPage {
       error: (e) =>{
         console.error(e)
       }
-    }
-    )
+    })
   }
-
 
   // Cada horario lo cambia a eventos, tipo y datos necesarios para que lo admita el calendario
   intercambiarHorarioPorEvento(){
@@ -160,11 +167,13 @@ export class CalendarPage {
       return timePartA.localeCompare(timePartB)
     })
   }
+
   //Quita los guiones a la fecha a como lo acepta rrule
   convertirFecha(fecha:string){
     return ';UNTIL=' + fecha.replace(/-/g, '') + 'T235959'; 
   }
-//Intercambiamos la frecuencia a como la acepta rrule
+
+  //Intercambiamos la frecuencia a como la acepta rrule
   intercambiarFrecuencia(frecuencia: string){
     const rrule: Record<string, string> = {
       Diario: "FREQ=DAILY",
@@ -174,6 +183,7 @@ export class CalendarPage {
     };
     return rrule[frecuencia] ?? rrule['default'];
   }
+
   //Busca la clase para obtener los datos a poner en el evento.
   buscarClase(id:number){
     return this.allClasses.find((clase)=> Number(clase.id) === id);
@@ -187,18 +197,18 @@ export class CalendarPage {
     this.selectedSegment = event.detail.value;
   }
 
-
- //---
-  /*createEvent() {
-    if (this.selectedDate) {
-      console.log(this.selectedDate)
-      const eventDate = new Date(this.selectedDate);
-      console.log('Evento creado para el día:', eventDate);
-      // Aquí puedes manejar la lógica para guardar el evento
-    } else {
-      console.log('Por favor, selecciona una fecha.');
-    }
-  }*/
+  addEvent() {
+    const newEvent = {
+      title: this.clase,
+      instructor: this.name,
+      frequency: this.selectedFrequency,
+      startDate: this.selectedDateInitial,
+      startHour: this.selectedHourInitial,
+      endDate: this.selectedDateFinal,
+      endHour: this.selectedHourFinal
+    };
+    console.log('Nuevo evento:', newEvent);
+  }
 
   confirm() {
     console.log("Clase: ", this.clase);
@@ -235,6 +245,7 @@ export class CalendarPage {
     this.clase = '';
     this.name = '';
   }
+
   //----Cambia el tipo de vista del calendario
   setView(view:string){
     this.calendarControls.setView(view);
@@ -252,10 +263,18 @@ export class CalendarPage {
     return this.allClasses.filter(clase => clase.titulo.toLowerCase().includes(filterValue))
 
   }
-
-  validadorClase(){
-    
+  validadorClase(){ 
   }
 
-  
+  /*************************MODAL PARA MOSTRAR EL CALENDARIO*************************/
+  async openCalModal() {
+    const modal = await this.modalControl.create({
+      component: CalModalPage, // Aquí se especifica tu componente modal
+    });
+    await modal.present();
+    const { data } = await modal.onDidDismiss();
+    if (data) {
+      this.selectedDateInitial = data.selectedDate; // Actualiza con la fecha seleccionada
+    }
+  }
 }

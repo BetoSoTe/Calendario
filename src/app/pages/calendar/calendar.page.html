@@ -69,15 +69,15 @@
             </ion-label>
           </ion-item>
           <ion-item>
-            <ion-button class="create-button" fill="Clear" (click)="setOpen(true)">Editar</ion-button>
-            <ion-button class="reset-button" fill="Clear" (click)="reset()">Eliminar</ion-button>
+            <ion-button class="edit-button" fill="Clear" (click)="setOpen(true)">Editar</ion-button>
+            <ion-button class="cancel-button" fill="Clear" (click)="reset()">Eliminar</ion-button>
           </ion-item>
         </ion-list>
       </ng-template>
 
     </sx-calendar>
   </div>
-  <!-- Modal Nueva Clase -->
+  <!-- MODAL NUEVA CLASE -->
   <ion-modal [isOpen]="isModalOpen" (ionModalDidDismiss)="onModalDidDismiss()" class="modal-cal">
     <ng-template>
       <ion-header class="modal-header">
@@ -149,18 +149,24 @@
           </ion-select>
         </ion-item>
         <ion-item>
-          <ion-label>Fecha Inicial: </ion-label>
-          <ion-datetime presentation="date" [preferWheel]="true" [(ngModel)]="selectedDateInitial" min="2020-01-01"
-            max="2030-12-31"></ion-datetime>
-          <ion-label>Hora Inicial: </ion-label>
-          <ion-datetime presentation="time" [(ngModel)]="selectedHourInitial"></ion-datetime>
+          <ion-item (click)="openCalModal()">
+            <ion-label>Fecha Inicial: </ion-label>
+            <ion-input [(ngModel)]="selectedDateInitial" placeholder="DD/MM/YYYY" readonly></ion-input>
+          </ion-item>
+          <ion-item (click)="openCalModal()">
+            <ion-label>Hora Inicial: </ion-label>
+            <ion-input [(ngModel)]="selectedHourInitial" readonly></ion-input>
+          </ion-item>
         </ion-item>
         <ion-item>
-          <ion-label>Fecha Final: </ion-label>
-          <ion-datetime presentation="date" [preferWheel]="true" [(ngModel)]="selectedDateFinal" min="2020-01-01"
-            max="2030-12-31"></ion-datetime>
-          <ion-label>Hora Final: </ion-label>
-          <ion-datetime presentation="time" [(ngModel)]="selectedHourFinal"></ion-datetime>
+          <ion-item (click)="openCalModal()">
+            <ion-label>Fecha Final: </ion-label>
+            <ion-input [(ngModel)]="selectedDateFinal" placeholder="DD/MM/YYYY" readonly></ion-input>
+          </ion-item>
+          <ion-item (click)="openCalModal()">
+            <ion-label>Hora Final: </ion-label>
+            <ion-input [(ngModel)]="selectedHourFinal" readonly></ion-input>
+          </ion-item>
         </ion-item>
       </ion-content>
 
