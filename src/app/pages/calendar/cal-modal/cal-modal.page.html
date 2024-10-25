@@ -1,17 +1,40 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Seleccionar Fecha</ion-title>
+    @if(typeOfTimeSelection ==='selectedDateInitial' || typeOfTimeSelection==='selectedDateFinal'){
+      <ion-title>Seleccionar Fecha</ion-title>
+    }@else{
+      <ion-title>Seleccionar Hora</ion-title>
+    }
     <ion-buttons slot="end">
       <ion-button (click)="closeModal()">Cerrar</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-
 <ion-content>
-  <ion-datetime displayFormat="DD-MM-YYYY" 
-                [(ngModel)]="selectedDate" 
-                (ionChange)="onDateChange($event)">
-  </ion-datetime>
-  <ion-button expand="full" (click)="closeModal()">Confirmar</ion-button>
+  <div class="center">
+    @if(typeOfTimeSelection ==='selectedDateInitial' || typeOfTimeSelection==='selectedDateFinal'){
+      <ion-datetime 
+                  presentation="date"
+                  displayFormat="YYYY-MM-DD" 
+                  [(ngModel)]="selectedDate" 
+                  [value]="selectedTimeInitial"
+                  (ionChange)="onDateChange($event)"
+                  max="2040"
+                  locale="mx">
+                  
+      </ion-datetime>
+    }@else{
+      <ion-datetime 
+                  presentation="time"
+                  [value]="selectedTimeInitial"
+                  [(ngModel)]="selectedHour" 
+                  (ionChange)="onDateChange($event)"
+    ></ion-datetime>
+    }
+  </div>
+  
 </ion-content>
+<ion-footer>
+  <ion-button [disabled]="!isTimeSelected" expand="full" (click)="onConfirmar()">Confirmar</ion-button>
+</ion-footer>

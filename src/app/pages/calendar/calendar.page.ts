@@ -1,5 +1,5 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DATE_PIPE_DEFAULT_OPTIONS } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonDatetime, IonIcon, IonSegment, IonSegmentButton, IonLabel, IonButton, IonModal, IonButtons, IonItem, IonInput, IonList, IonText } from '@ionic/angular/standalone';
 import { createCalendar, createViewWeek, createViewDay, createViewMonthGrid, viewMonthGrid, CalendarEvent} from "@schedule-x/calendar";
@@ -80,6 +80,7 @@ export class CalendarPage {
       },
       onDoubleClickDate: (dateTime) => {
         this.selectedDateInitial = dateTime;
+        this.selectedDateFinal = dateTime;
         //this.createEvent();
         this.setOpen(true);
       },
@@ -220,7 +221,7 @@ export class CalendarPage {
     this.setOpen(false);
   }
 
-  //---Abre y cierra el mdal
+  //---Abre y cierra el modal
   setOpen(isOpen: boolean) {
     this.isModalOpen = isOpen;
     if(isOpen && this.selectedDateTime){
@@ -234,6 +235,10 @@ export class CalendarPage {
       }
       
     }
+    if(!this.selectedDateInitial) this.setDateInitial()
+  }
+
+  setDateInitial(){
   }
 
   onModalDidDismiss() {
@@ -241,7 +246,12 @@ export class CalendarPage {
   }
 
   reset() {
-    this.selectedDateInitial = new Date().toISOString();
+    console.log('reset')
+    this.selectedDateInitial = '';
+    this.selectedDateFinal = '';
+    this.selectedHourFinal = '';
+    this.selectedHourInitial = '';
+    this.selectedDateTime = '';
     this.clase = '';
     this.name = '';
   }
@@ -263,19 +273,41 @@ export class CalendarPage {
     return this.allClasses.filter(clase => clase.titulo.toLowerCase().includes(filterValue))
 
   }
-  validadorClase(){ 
-  }
-
   /*************************MODAL PARA MOSTRAR EL CALENDARIO*************************/
-  async openCalModal() {
+  async openCalModal(typeOfTimeSelection: string) {
+    const selectedTimeInitial = this.getSelectedTimeInitial(typeOfTimeSelection);
     const modal = await this.modalControl.create({
-      component: CalModalPage, // Aquí se especifica tu componente modal
+      component: CalModalPage, // Aquí se especifica el componente modal
+      backdropDismiss: true,
+      componentProps:{ typeOfTimeSelection, selectedTimeInitial},
     });
     await modal.present();
     const { data } = await modal.onDidDismiss();
-    if (data) {
-      this.selectedDateInitial = data.selectedDate; // Actualiza con la fecha seleccionada
+    if (data.isTimeSelected) this.setTimeSelected(data);
+  }
+
+  setTimeSelected(data:any){
+    switch(data.typeOfTimeSelection){
+      case 'selectedDateInitial': this.selectedDateInitial = data.selectedDate
+      break;
+      case 'selectedDateFinal': this.selectedDateFinal = data.selectedDate
+      break;
+      case 'selectedHourInitial': this.selectedHourInitial = data.selectedHour
+      break;
+      case 'selectedHourFinal': this.selectedHourFinal = data.selectedHour
+      break;
     }
   }
-  
+
+  getSelectedTimeInitial(typeOfTimeSelection:string):string{
+    const timeInitial: Record<string,string> = {
+      selectedDateInitial: this.selectedDateInitial,
+      selectedDateFinal: this.selectedDateFinal ,
+      selectedHourInitial: this.selectedHourInitial,
+      selectedHourFinal: this.selectedHourFinal, 
+      default: "" 
+    }
+      
+    return timeInitial[typeOfTimeSelection] ?? timeInitial['default']
+  }
 }

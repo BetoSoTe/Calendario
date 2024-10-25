@@ -149,23 +149,23 @@
           </ion-select>
         </ion-item>
         <ion-item>
-          <ion-item (click)="openCalModal()">
+          <ion-item (click)="openCalModal('selectedDateInitial')">
             <ion-label>Fecha Inicial: </ion-label>
-            <ion-input [(ngModel)]="selectedDateInitial" placeholder="DD/MM/YYYY" readonly></ion-input>
+            <ion-input [(ngModel)]="selectedDateInitial" placeholder="YYYY-MM-DD" readonly></ion-input>
           </ion-item>
-          <ion-item (click)="openCalModal()">
+          <ion-item (click)="openCalModal('selectedHourInitial')">
             <ion-label>Hora Inicial: </ion-label>
-            <ion-input [(ngModel)]="selectedHourInitial" readonly></ion-input>
+            <ion-input [(ngModel)]="selectedHourInitial" placeholder="00:00" readonly></ion-input>
           </ion-item>
         </ion-item>
         <ion-item>
-          <ion-item (click)="openCalModal()">
+          <ion-item (click)="openCalModal('selectedDateFinal')">
             <ion-label>Fecha Final: </ion-label>
-            <ion-input [(ngModel)]="selectedDateFinal" placeholder="DD/MM/YYYY" readonly></ion-input>
+            <ion-input [(ngModel)]="selectedDateFinal" placeholder="YYYY-MM-DD" readonly></ion-input>
           </ion-item>
-          <ion-item (click)="openCalModal()">
+          <ion-item (click)="openCalModal('selectedHourFinal')">
             <ion-label>Hora Final: </ion-label>
-            <ion-input [(ngModel)]="selectedHourFinal" readonly></ion-input>
+            <ion-input [(ngModel)]="selectedHourFinal" placeholder="00:00" readonly></ion-input>
           </ion-item>
         </ion-item>
       </ion-content>
