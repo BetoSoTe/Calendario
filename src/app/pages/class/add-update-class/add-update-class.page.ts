@@ -5,6 +5,7 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon, ModalC
   AlertController, IonSpinner, IonRow, IonCol } from '@ionic/angular/standalone';
 import { Class } from 'src/app/models/class';
 import { ClassService } from 'src/app/services/class.service';
+import { clubs } from 'src/app/enums/clubs';
 
 @Component({
   selector: 'app-add-update-class',
@@ -22,19 +23,19 @@ export class AddUpdateClassPage implements OnInit {
   clubs = [
     {
       id: 1,
-      name: "Club Alpha 2"
+      name: clubs.ALPHA_2
     },
     {
       id: 2,
-      name: "Club Alpha 3"
+      name: clubs.ALPHA_3
     },
     {
       id: 3,
-      name: "CIMERA"
+      name: clubs.CIMERA
     },
     {
       id: 4,
-      name: "Sports Plaza"
+      name: clubs.SPORTS_PLAZA
     },
   ]
   classes: any = [];

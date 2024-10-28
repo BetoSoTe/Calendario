@@ -14,10 +14,10 @@
       "id": "2",
       "titulo": "Pilates",
       "descripcion": "Disciplina combinada que ayuda a fortalecer el cuerpo y mente",
-      "club": "CIMERA",
+      "club": "Sports Plaza",
       "instructor": "Gabriela López Hernández",
-      "cupo": 25,
       "inscritos": 0,
+      "cupo": 25,
       "restan": 25
     },
     {
@@ -31,7 +31,7 @@
       "restan": 18
     },
     {
-      "id": 4,
+      "id": "4",
       "titulo": "Box",
       "descripcion": "Clases de box",
       "club": "Club Alpha 2",
@@ -89,7 +89,7 @@
     },
     {
       "id": "6",
-      "idClase": 1,
+      "idClase": 4,
       "fecha": "2024-10-26",
       "fechaHasta": "2024-12-15",
       "horaInicio": "03:50",

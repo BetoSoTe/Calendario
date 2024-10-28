@@ -6,7 +6,6 @@ import { createCalendar, createViewWeek, createViewDay, createViewMonthGrid, vie
 import { CalendarComponent } from "@schedule-x/angular";
 import { createCalendarControlsPlugin } from '@schedule-x/calendar-controls'
 import { createScrollControllerPlugin } from '@schedule-x/scroll-controller'
-// import { createEventsServicePlugin } from '@schedule-x/events-service'
 import { createEventModalPlugin } from '@schedule-x/event-modal'
 import { HorariosClasesService } from 'src/app/services/horarios-clases.service';
 import { HorarioClase } from 'src/app/models/horarioClase';
@@ -16,8 +15,7 @@ import { createEventRecurrencePlugin, createEventsServicePlugin } from "@schedul
 import { ModalController } from '@ionic/angular';
 import { CalModalPage } from './cal-modal/cal-modal.page';
 
-import { map,startWith,debounceTime } from 'rxjs/operators'
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import { map,startWith } from 'rxjs/operators'
 import { MatAutocompleteModule } from '@angular/material/autocomplete'
 import { Observable } from 'rxjs';
 
@@ -35,7 +33,7 @@ import { Observable } from 'rxjs';
             MatAutocompleteModule /*NgCalendarModule*/],
   providers: [ModalController]
 })
-export class CalendarPage {
+export class CalendarPage implements OnInit{
   selectedSegment: string = 'mes';
   allClasses: Class[] = [];
   //------Select con autocompletado
@@ -61,6 +59,40 @@ export class CalendarPage {
   scrollController = createScrollControllerPlugin({initialScroll: '00:01'})
   eventsServicePlugin = createEventsServicePlugin();
   eventModal = createEventModalPlugin();
+  calendars = {
+    alpha2: {
+      colorName: 'alpha2',
+      darkColors: {
+        main: '#0075C9',
+        onContainer: '#0075C9',
+        container: '#70c4ff',
+      },
+    },
+    alpha3: {
+      colorName: 'alpha3',
+      darkColors: {
+        main: '#70c4ff',// barra lateral
+        onContainer: '#ffffff', //letra
+        container: '#0075C9',  //fondo
+      },
+    },
+    cimera: {
+      colorName: 'cimera',
+      darkColors: {
+        main: '#9c8311',
+        onContainer: '#ffffff;',
+        container: '#1F1F1F',
+      },
+    },
+    sports: {
+      colorName: 'sports',
+      darkColors: {
+        main: '#ffc62f',
+        onContainer: '#ffffff',
+        container: '#4f2683',
+      },
+    },
+  };
 
   calendar = createCalendar({
     isDark: true,
@@ -68,6 +100,7 @@ export class CalendarPage {
     defaultView: viewMonthGrid.name,
     views: [createViewMonthGrid(),createViewWeek(),createViewDay()],
     locale: 'es-ES',
+    calendars: this.calendars,
     monthGridOptions: {
       nEventsPerDay: 5
     },
@@ -75,13 +108,11 @@ export class CalendarPage {
     callbacks: {
       onDoubleClickDateTime: (dateTime) => {
         this.selectedDateTime = dateTime; // Guarda la fecha seleccionada
-        //this.createEvent(); // Llama a la función dentro del componente
-        this.setOpen(true); // Lógica para abrir el modal o diálogo
+        this.setOpen(true); // Lógica para abrir el modal
       },
       onDoubleClickDate: (dateTime) => {
         this.selectedDateInitial = dateTime;
         this.selectedDateFinal = dateTime;
-        //this.createEvent();
         this.setOpen(true);
       },
       onEventClick:(calendarEvent) => {
@@ -142,7 +173,8 @@ export class CalendarPage {
         end: "",
         location: "",
         people: [""],
-        rrule: ""
+        rrule: "",
+        calendarId: "",
       }
       
       //buscamos la clase con la id que esta en el horario
@@ -152,6 +184,7 @@ export class CalendarPage {
       const end = horario.fecha+' '+horario.horaFin;
       //Ponemos la frecuencia como la acepta el calendario
       if (horario.frecuencia !== "Una vez") evento.rrule = this.intercambiarFrecuencia(horario.frecuencia) +  this.convertirFecha(horario.fechaHasta);
+      
       //agregamos los respectivos datos al evento como lo acepta el calendario
       evento.id = Number(horario.id);
       evento.start = start;
@@ -160,6 +193,8 @@ export class CalendarPage {
         evento.title = clase.titulo;
         evento.location = clase.club;
         evento.people = [clase.instructor];
+        //Ponemos los colores segun el club
+        evento.calendarId = this.colorSegunClub(clase.club);
       }
       return evento;
     }).sort((a, b) => {
@@ -183,6 +218,18 @@ export class CalendarPage {
       default: ""
     };
     return rrule[frecuencia] ?? rrule['default'];
+  }
+
+  //Seleccionamos el color del evento en el calendario segun el club
+  colorSegunClub(club:string):string{
+    const calendarId: Record<string, string> = {
+      "Club Alpha 2": "alpha2",
+      "Club Alpha 3": "alpha3",
+      "CIMERA": "cimera",
+      "Sports Plaza": "sports",
+      "default": ""
+    };
+    return calendarId[club] ?? calendarId['default']
   }
 
   //Busca la clase para obtener los datos a poner en el evento.
@@ -235,10 +282,6 @@ export class CalendarPage {
       }
       
     }
-    if(!this.selectedDateInitial) this.setDateInitial()
-  }
-
-  setDateInitial(){
   }
 
   onModalDidDismiss() {

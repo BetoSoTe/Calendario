@@ -50,7 +50,7 @@ export class CalModalPage implements OnInit {
     }else{
       this.selectedHour = dateValue;
     }
-    if(this.selectedDate){}
+    // if(this.selectedDate){}
     this.selectedDate = this.formatDate(dateValue); // Formatea la fecha
     
     console.log(this.selectedHour)
