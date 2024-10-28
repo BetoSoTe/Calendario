@@ -70,7 +70,7 @@
           </ion-item>
           <ion-item>
             <ion-button class="edit-button" fill="Clear" (click)="setOpen(true)">Editar</ion-button>
-            <ion-button class="cancel-button" fill="Clear" (click)="reset()">Eliminar</ion-button>
+            <ion-button class="cancel-button" fill="Clear" (click)="onDeleteEvent(selectedHorario?.id)">Eliminar</ion-button>
           </ion-item>
         </ion-list>
       </ng-template>

@@ -51,7 +51,7 @@ export class ClassPage implements OnInit {
   }
 
   async mostrarAlertaOk(){
-    const alert = await this.crearAlert('¡Exito!','La acción se a producido correctamente.');
+    const alert = await this.crearAlert('¡Exito!','La acción se ha producido correctamente.');
     alert.present().then(async () => {
       this.modalController.dismiss();
     });

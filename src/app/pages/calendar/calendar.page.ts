@@ -1,7 +1,8 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule, DATE_PIPE_DEFAULT_OPTIONS } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonDatetime, IonIcon, IonSegment, IonSegmentButton, IonLabel, IonButton, IonModal, IonButtons, IonItem, IonInput, IonList, IonText } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonDatetime, IonIcon, IonSegment, IonSegmentButton, IonLabel, IonButton, IonModal, 
+  IonButtons, IonItem, IonInput, IonList, IonText, AlertController } from '@ionic/angular/standalone';
 import { createCalendar, createViewWeek, createViewDay, createViewMonthGrid, viewMonthGrid, CalendarEvent} from "@schedule-x/calendar";
 import { CalendarComponent } from "@schedule-x/angular";
 import { createCalendarControlsPlugin } from '@schedule-x/calendar-controls'
@@ -18,6 +19,8 @@ import { CalModalPage } from './cal-modal/cal-modal.page';
 import { map,startWith } from 'rxjs/operators'
 import { MatAutocompleteModule } from '@angular/material/autocomplete'
 import { Observable } from 'rxjs';
+
+
 
 @Component({
   selector: 'app-calendar',
@@ -36,6 +39,7 @@ import { Observable } from 'rxjs';
 export class CalendarPage implements OnInit{
   selectedSegment: string = 'mes';
   allClasses: Class[] = [];
+  isLoading:boolean =  false;
   //------Select con autocompletado
   filteredClases?: Observable<Class[]>;;
   form = new FormControl('',[Validators.required]);
@@ -124,7 +128,9 @@ export class CalendarPage implements OnInit{
 
   constructor(private horariosClasesService: HorariosClasesService,
               private classService: ClassService,
-              private modalControl: ModalController) { }
+              private modalControl: ModalController,
+              private alertController: AlertController,
+              ) { }
 
   ngOnInit() {
     this.getData();
@@ -258,6 +264,48 @@ export class CalendarPage implements OnInit{
     console.log('Nuevo evento:', newEvent);
   }
 
+  //----Elimina un evento/horario
+async  onDeleteEvent(selectedHorarioId?:number){
+    const alert = await this.alertController.create({
+      header: 'Eliminar',
+      message: '¿Esta seguro que desea eliminar este horario de clase?',
+      buttons:  [
+        {
+          text: 'Cancelar',
+          role: 'cancel', 
+          handler: () => {
+            console.log('Eliminación cancelada')
+          }
+        },
+        {
+          text: 'Eliminar',
+          handler: () => {
+            this.deleteEvent(selectedHorarioId); // Llama a la función para eliminar
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
+
+  deleteEvent(id?: number ){
+    this.isLoading = true
+    if(id){
+      this.horariosClasesService.deleteHorario(id).subscribe({
+        next: (data)=>{
+          this.eventsServicePlugin.remove(id);
+          console.log(this.horariosClases)
+          this.isLoading  = !this.isLoading;
+          this.mostrarAlertaOk();
+        }, error:(e)=>{
+          this.mostrarAlertaError();
+          console.error(e);
+         this.isLoading  = !this.isLoading;
+        }
+      });
+    }
+  }
+
   confirm() {
     console.log("Clase: ", this.clase);
     console.log("Instructor: ", this.name);
@@ -353,4 +401,31 @@ export class CalendarPage implements OnInit{
       
     return timeInitial[typeOfTimeSelection] ?? timeInitial['default']
   }
+
+  ///----Manejo de alertas----//
+
+  async mostrarAlertaError(){
+    const alert = await this.crearAlert('¡Ooops!','Hubo un problema. Intente más tarde.');
+    alert.present();
+  }
+
+  async mostrarAlertaOk(){
+    const alert = await this.crearAlert('¡Exito!','La acción se ha producido correctamente.');
+    
+    alert.present().then(async () => {
+      setTimeout(()=>{
+        location.reload()
+      }, 1500);
+    });
+  }
+
+  async crearAlert(header: string,mensaje: string){
+    const alert = await this.alertController.create({
+      header: header,
+      message: mensaje,
+      buttons: ['OK']
+    });
+    return alert;
+  }
+
 }

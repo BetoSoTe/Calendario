@@ -14,4 +14,8 @@ export class HorariosClasesService {
   getHorarios():Observable<HorarioClase[]>{
     return this.http.get<HorarioClase[]>(environment.global+'horariosClases');
   }
+
+  deleteHorario(id: number): Observable<any> {
+    return this.http.delete<any>(`${environment.global+'horariosClases'}/${id}`);
+  }
 }
