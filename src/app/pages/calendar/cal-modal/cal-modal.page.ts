@@ -1,7 +1,7 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { IonicModule } from '@ionic/angular';
-
+/**/
 @Component({
   selector: 'app-cal-modal',
   templateUrl: './cal-modal.page.html',
