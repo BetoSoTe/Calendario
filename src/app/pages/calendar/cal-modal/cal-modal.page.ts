@@ -23,7 +23,6 @@ export class CalModalPage implements OnInit {
       this.isTimeSelected = true
       this.setSelectedTimeInitial()
     } 
-    console.log(this.selectedHour)
   }
   setSelectedTimeInitial(){
     switch(this.typeOfTimeSelection){
@@ -79,7 +78,6 @@ export class CalModalPage implements OnInit {
 
 
   formatHour(dateString?: string): string {
-    console.log(dateString);
     const date = new Date(dateString!)
     const hours = (date.getHours())
     const hour = (hours< 10)? '0'+ hours : ''+ hours
@@ -88,7 +86,6 @@ export class CalModalPage implements OnInit {
     return `${hour}:${minute}`
   }
   onConfirmar(){
-    console.log(this.selectedHour)
     this.modalController.dismiss({  
       selectedDate: this.selectedDate, 
       typeOfTimeSelection:this.typeOfTimeSelection, 
