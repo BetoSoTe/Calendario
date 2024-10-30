@@ -19,15 +19,29 @@
         <ion-button class="reset-button" fill="Clear" (click)="reset()">Reset</ion-button>
       </ng-template>
       <ng-template #eventModal>
-        <ion-buttons slot="start">
-          <ion-button color="medium" (click)="onCloseEventModal();">
-            <ion-icon name="close"></ion-icon>
-            Cerrar
-          </ion-button>
-        </ion-buttons>
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>Horario</ion-title>
+            <ion-buttons slot="end">
+              <ion-button color="danger" (click)="onCloseEventModal();">
+                Cerrar
+                <ion-icon name="close"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        
         <ion-list lines="none">
           <ion-item>
             <ion-label>{{ selectedClaseHorario?.titulo }}</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-icon name="calendar-outline" class="even-modal-text"></ion-icon>
+            <ion-label>
+              <p>
+                {{selectedHorario?.fecha}} / {{selectedHorario?.fechaHasta}}
+              </p>
+            </ion-label>
           </ion-item>
           <ion-item>
             <ion-icon name="time-outline" class="even-modal-text"></ion-icon>
@@ -69,7 +83,7 @@
             </ion-label>
           </ion-item>
           <ion-item>
-            <ion-button class="edit-button" fill="Clear" (click)="setOpen(true)">Editar</ion-button>
+            <ion-button class="edit-button" fill="Clear" (click)="setUpdateData(selectedHorario)">Editar</ion-button>
             <ion-button class="cancel-button" fill="Clear" (click)="onDeleteEvent(selectedHorario?.id)">Eliminar</ion-button>
           </ion-item>
         </ion-list>
@@ -82,15 +96,18 @@
     <ng-template>
       <ion-header class="modal-header">
         <ion-toolbar>
-          <ion-title>Agregar Clase</ion-title>
+          <ion-title>Agregar horario a una clase</ion-title>
+          <ion-buttons slot="end">
+            <ion-button class="close-btn" (click)="setOpen(false)">Cerrar<ion-icon name="close" ></ion-icon></ion-button>
+          </ion-buttons>
         </ion-toolbar>
       </ion-header>
-
+      
       <ion-content class="ion-padding">
         <ion-item class="autocomplete-container">
           <mat-form-field class="full-width">
             <mat-label>Número de clase:</mat-label>
-            <input type="text" placeholder="- - - -" aria-label="Number" matInput [formControl]="form"
+            <input type="text" placeholder="- - - -" aria-label="Number" matInput [formControl]="formGroup.controls.idClase"
               [matAutocomplete]="auto">
             <mat-autocomplete #auto="matAutocomplete">
               @for (clase of filteredClases | async; track clase.id) {
@@ -100,6 +117,16 @@
             </mat-autocomplete>
           </mat-form-field>
         </ion-item>
+        @if(formGroup.controls.idClase.errors ){
+          <div class="validator">
+            @if(formGroup.controls.idClase.hasError('required')){
+              <div>"El número de clase es requerido"</div>
+            }
+            @if(formGroup.controls.idClase.hasError('idClaseInvalido')){
+              <div>"El número de clase debe estar dado de alta y aparecer en la lista"</div>
+            }
+        </div>
+        }
         <div *ngIf="filteredClass | async as clase; else noFiltrado">
           <ion-item>
             <ion-grid>
@@ -140,18 +167,26 @@
             </ion-grid>
           </ion-item>
         </ng-template>
+        
         <ion-item>
-          <ion-select label="Frecuencia: ">
-            <ion-select-option value="once">Una vez</ion-select-option>
-            <ion-select-option value="dialy">Diario</ion-select-option>
-            <ion-select-option value="weekly">Semanal</ion-select-option>
-            <ion-select-option value="monthly">Mensual</ion-select-option>
+          <ion-select label="Frecuencia: " placeholder="- - - -" [(ngModel)]="selectedFrequency" (ionChange)="actualizarFrecuencia()">
+            <ion-select-option value="Una vez">Una vez</ion-select-option>
+            <ion-select-option value="Diario">Diario</ion-select-option>
+            <ion-select-option value="Semanal">Semanal</ion-select-option>
+            <ion-select-option value="Mensual">Mensual</ion-select-option>
           </ion-select>
         </ion-item>
+        @if(formGroup.controls.frecuencia.errors ){
+          <div class="validator">
+            @if(formGroup.controls.frecuencia.hasError('required')){
+              <div>"La frecuencia es requerida"</div>
+            }
+        </div>
+        }
         <ion-item>
           <ion-item (click)="openCalModal('selectedDateInitial')">
             <ion-label>Fecha Inicial: </ion-label>
-            <ion-input [(ngModel)]="selectedDateInitial" placeholder="YYYY-MM-DD" readonly></ion-input>
+            <ion-input [(ngModel)]="selectedDateInitial" placeholder="YYYY-MM-DD" readonly ></ion-input>
           </ion-item>
           <ion-item (click)="openCalModal('selectedHourInitial')">
             <ion-label>Hora Inicial: </ion-label>
@@ -168,19 +203,55 @@
             <ion-input [(ngModel)]="selectedHourFinal" placeholder="00:00" readonly></ion-input>
           </ion-item>
         </ion-item>
+        @if(formGroup.controls.fecha.errors ){
+          <div class="validator">
+            @if(formGroup.controls.fecha.hasError('required')){
+              <div>"La fecha inicial es requerida"</div>
+            }
+            @if(formGroup.controls.fecha.hasError('fechaInicioInvalida')){
+              <div>"La fecha inicial debe ser a partir de hoy o posterior a la de hoy"</div>
+            }
+        </div>
+        }
+        @if(formGroup.controls.horaInicio.errors ){
+          <div class="validator">
+            @if(formGroup.controls.horaInicio.hasError('required')){
+              <div>"La hora Inicial es requerida"</div>
+            }
+        </div>
+        }
+        @if(formGroup.controls.fechaHasta.errors ){
+          <div class="validator">
+            @if(formGroup.controls.fechaHasta.hasError('required')){
+              <div>"La fecha final es requerida"</div>
+            }
+        </div>
+        }
+        @if(formGroup.hasError('fechaFinInvalida')){
+          <div class="validator">"La fecha final debe ser a partir de la fecha inicial o posterior a la fecha inicial "</div>
+        }
+        @if(formGroup.controls.horaFin.errors ){
+          <div class="validator">
+            @if(formGroup.controls.horaFin.hasError('required')){
+              <div>"La hora final es requerida"</div>
+            }
+        </div>
+        }
+        @if(formGroup.hasError('horaInvalida')){
+          <div class="validator">"La hora final debe ser al menos 15 minutos posterior a la hora inicial"</div>
+        }
+        
       </ion-content>
-
+      
       
       <ion-footer>
         <ion-toolbar>
           <ion-buttons slot="end">
-            <ion-button class="accept-btn" (click)="setOpen(false)" [strong]="true">Aceptar</ion-button>
-          </ion-buttons>
-          <ion-buttons slot="end">
-            <ion-button class="close-btn" (click)="setOpen(false)">Cerrar</ion-button>
+            <ion-button class="accept-btn" (click)="onAddEvent()" [strong]="true" [disabled]="formGroup.invalid">Aceptar</ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-footer>
+    
     </ng-template>
   </ion-modal>
 

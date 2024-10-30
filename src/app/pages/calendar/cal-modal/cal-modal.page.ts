@@ -41,21 +41,25 @@ export class CalModalPage implements OnInit {
   onDateChange(event: any) {
     this.isTimeSelected = true
     let dateValue = event.detail.value; // Captura el valor del evento
+
+    //Ponemos el valor segun el formato
     if(!this.selectedDate) {
-      if(this.typeOfTimeSelection === 'selectedDateInitial' || this.typeOfTimeSelection === 'selectedDateFinal') dateValue = dateValue.split('T')[0]
+      if(this.typeOfTimeSelection === 'selectedDateInitial' || this.typeOfTimeSelection === 'selectedDateFinal') this.selectedDate = this.formatDate(dateValue.split('T')[0])
+    }else{
+    //si el valor del tiempo seleccionado tiene el formato que incluye la 'T' usamos la funcion para darle formato a la hora sino la guardamos tal cual
+      (/T/.test(dateValue)) ? this.selectedDate= this.formatDate(dateValue.split('T')[0]) : this.selectedDate = dateValue;
     }
+
     if(!this.selectedHour) {
       if(this.typeOfTimeSelection === 'selectedHourInitial' || this.typeOfTimeSelection === 'selectedHourFinal') this.selectedHour = this.formatHour(dateValue);
     }else{
-      this.selectedHour = dateValue;
+      //si el valor del tiempo seleccionado tiene el formato que incluye la 'T' usamos la funcion para darle formato a la hora sino la guardamos tal cual
+      (/T/.test(dateValue)) ? this.selectedHour = this.formatHour(dateValue) : this.selectedHour = dateValue;
     }
-    // if(this.selectedDate){}
-    this.selectedDate = this.formatDate(dateValue); // Formatea la fecha
     
-    console.log(this.selectedHour)
   }
 
-  // Función para formatear la fecha a DD-MM-YYYY
+  // Función para formatear la fecha a YYYY-MM-DD
   formatDate(dateString?: string): string { 
     // Divide la fecha en componentes
     const [year, month, day] = dateString!.split('-').map(Number);
@@ -67,16 +71,7 @@ export class CalModalPage implements OnInit {
 
     return `${formattedYear}-${formattedMonth}-${formattedDay}`; // Retorna en formato YYYY-MM-DD
 }
-
-// formatDate(dateString: string): string {
-//   const date = new Date(dateString); // Convierte a objeto Date
-//   const day = ('0' + date.getDate()).slice(-2); // Obtiene el día
-//   const month = ('0' + (date.getMonth() + 1)).slice(-2); // Obtiene el mes
-//   const year = date.getFullYear(); // Obtiene el año
-//   return `${year}-${month}-${day}`; // Retorna en formato YYYY-MM-DD
-// }
-
-
+  //Función para formatear la hora a HH:MM
   formatHour(dateString?: string): string {
     const date = new Date(dateString!)
     const hours = (date.getHours())

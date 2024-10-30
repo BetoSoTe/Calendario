@@ -1,8 +1,8 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule, DATE_PIPE_DEFAULT_OPTIONS } from '@angular/common';
-import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonDatetime, IonIcon, IonSegment, IonSegmentButton, IonLabel, IonButton, IonModal, 
-  IonButtons, IonItem, IonInput, IonList, IonText, AlertController } from '@ionic/angular/standalone';
+  IonButtons, IonItem, IonInput, IonList, IonText, AlertController, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
 import { createCalendar, createViewWeek, createViewDay, createViewMonthGrid, viewMonthGrid, CalendarEvent} from "@schedule-x/calendar";
 import { CalendarComponent } from "@schedule-x/angular";
 import { createCalendarControlsPlugin } from '@schedule-x/calendar-controls'
@@ -33,16 +33,25 @@ import { Observable } from 'rxjs';
             IonSegmentButton, IonSegment, IonIcon, IonDatetime, 
             IonContent, IonHeader, IonTitle, IonToolbar,
             CommonModule, FormsModule, CalendarComponent, ReactiveFormsModule,
-            MatAutocompleteModule /*NgCalendarModule*/],
+            MatAutocompleteModule, IonSelect, IonSelectOption /*NgCalendarModule*/],
   providers: [ModalController]
 })
 export class CalendarPage implements OnInit{
   selectedSegment: string = 'mes';
   allClasses: Class[] = [];
-  isLoading:boolean =  false;
-  //------Select con autocompletado
+  isUpdate:boolean=false;
+  //------Formulario
   filteredClases?: Observable<Class[]>;;
-  form = new FormControl('',[Validators.required]);
+  formGroup = new FormGroup({
+    id: new FormControl(0,[Validators.required,]),
+    idClase: new FormControl('',[Validators.required,this.validadorIdClase.bind(this) ]),
+    frecuencia: new FormControl('',[Validators.required,]),
+    fecha: new FormControl('',[Validators.required,this.validadorFechaInicio]),
+    horaInicio: new FormControl('',[Validators.required]),
+    fechaHasta: new FormControl('',[Validators.required]),
+    horaFin: new FormControl('',[Validators.required]),
+  },{validators:[this.validadorFechaFin,this.validadorHora]});
+
   filteredClass? : Observable<Class | undefined>;
   //-----Modal
   isModalOpen = false;
@@ -54,6 +63,7 @@ export class CalendarPage implements OnInit{
   selectedHourFinal: string = ''; // Hora final
   selectedHorario?: HorarioClase;
   selectedClaseHorario?: Class;
+  
 
   //---Calendario
   horariosClases: HorarioClase[] = [];
@@ -112,11 +122,14 @@ export class CalendarPage implements OnInit{
     callbacks: {
       onDoubleClickDateTime: (dateTime) => {
         this.selectedDateTime = dateTime; // Guarda la fecha seleccionada
+        this.setSelectedTimeInitial();
         this.setOpen(true); // Lógica para abrir el modal
       },
       onDoubleClickDate: (dateTime) => {
         this.selectedDateInitial = dateTime;
         this.selectedDateFinal = dateTime;
+        this.actualizarFecha();
+        this.actualizarFechaHasta(); 
         this.setOpen(true);
       },
       onEventClick:(calendarEvent) => {
@@ -135,14 +148,20 @@ export class CalendarPage implements OnInit{
   ngOnInit() {
     this.getData();
     this.setView('month-grid');
-    this.filteredClases = this.form.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value || '')),
-    );
-    this.filteredClass = this.form.valueChanges.pipe(
-      map(value => this.buscarClase(Number(value))));
+    const idClaseControl = this.formGroup.get('idClase') as FormControl;
+    if (idClaseControl) {
+      this.filteredClases = idClaseControl.valueChanges.pipe(
+        startWith(''),
+        map(value => this._filter(value || ''))
+      );
+    
+      this.filteredClass = idClaseControl.valueChanges.pipe(
+        map(value => this.buscarClase(Number(value)))
+      );
+    }
+    
   }
-
+  
   getData(){
     this.horariosClasesService.getHorarios().subscribe({
       next: (data) =>{
@@ -159,7 +178,7 @@ export class CalendarPage implements OnInit{
     this.classService.getClasses().subscribe({
       next: (data)=>{
         this.allClasses = data; 
-        this.intercambiarHorarioPorEvento();
+        this.intercambiarHorariosPorEventos();
         this.eventsServicePlugin.set(this.events);
       },
       error: (e) =>{
@@ -169,45 +188,49 @@ export class CalendarPage implements OnInit{
   }
 
   // Cada horario lo cambia a eventos, tipo y datos necesarios para que lo admita el calendario
-  intercambiarHorarioPorEvento(){
+  intercambiarHorariosPorEventos(){
     this.events = this.horariosClases.map((horario)=>{
-      //creamos un evento vacio
-      const evento = {
-        id: 0,
-        title: "",
-        start: "",
-        end: "",
-        location: "",
-        people: [""],
-        rrule: "",
-        calendarId: "",
-      }
-      
-      //buscamos la clase con la id que esta en el horario
-      const clase = this.buscarClase(horario.idClase)
-      //ponemos la fecha con hora inicial y final que es como lo acepta el calendario
-      const start = horario.fecha+' '+horario.horaInicio;
-      const end = horario.fecha+' '+horario.horaFin;
-      //Ponemos la frecuencia como la acepta el calendario
-      if (horario.frecuencia !== "Una vez") evento.rrule = this.intercambiarFrecuencia(horario.frecuencia) +  this.convertirFecha(horario.fechaHasta);
-      
-      //agregamos los respectivos datos al evento como lo acepta el calendario
-      evento.id = Number(horario.id);
-      evento.start = start;
-      evento.end = end;
-      if (clase){
-        evento.title = clase.titulo;
-        evento.location = clase.club;
-        evento.people = [clase.instructor];
-        //Ponemos los colores segun el club
-        evento.calendarId = this.colorSegunClub(clase.club);
-      }
-      return evento;
+      return this.intercambiarHorarioPorEvento(horario)
     }).sort((a, b) => {
       const [datePartA, timePartA] = a.start.split(' ')
       const [datePartB, timePartB] = b.start.split(' ')
       return timePartA.localeCompare(timePartB)
     })
+  }
+
+  intercambiarHorarioPorEvento(horario:any){
+    //creamos un evento vacio
+    const evento = {
+      id: 0,
+      title: "",
+      start: "",
+      end: "",
+      location: "",
+      people: [""],
+      rrule: "",
+      calendarId: "",
+    }
+    
+    //buscamos la clase con la id que esta en el horario
+    const clase = this.buscarClase(horario.idClase)
+    //ponemos la fecha con hora inicial y final que es como lo acepta el calendario
+    const start = horario.fecha+' '+horario.horaInicio;
+    const end = horario.fecha+' '+horario.horaFin;
+    //Ponemos la frecuencia como la acepta el calendario
+    if (horario.frecuencia !== "Una vez") evento.rrule = this.intercambiarFrecuencia(horario.frecuencia) +  this.convertirFecha(horario.fechaHasta);
+    
+    //agregamos los respectivos datos al evento como lo acepta el calendario
+    evento.id = Number(horario.id);
+    evento.start = start;
+    evento.end = end;
+    if (clase){
+      evento.title = clase.titulo;
+      evento.location = clase.club;
+      evento.people = [clase.instructor];
+      //Ponemos los colores segun el club
+      evento.calendarId = this.colorSegunClub(clase.club);
+    }
+    return evento;
   }
 
   //Quita los guiones a la fecha a como lo acepta rrule
@@ -250,18 +273,93 @@ export class CalendarPage implements OnInit{
   segmentChanged(event: any) {
     this.selectedSegment = event.detail.value;
   }
+//---validaciones personalizadas
+validadorIdClase(control: AbstractControl): ValidationErrors | null{
+  const idClase = control.value;
+  //Valida si la id de clase esta agregada a la base de datos
+  return (idClase && this.buscarClase(Number(idClase)) ? null : { idClaseInvalido: true })
+}
 
-  addEvent() {
-    const newEvent = {
-      title: this.clase,
-      instructor: this.name,
-      frequency: this.selectedFrequency,
-      startDate: this.selectedDateInitial,
-      startHour: this.selectedHourInitial,
-      endDate: this.selectedDateFinal,
-      endHour: this.selectedHourFinal
-    };
-    console.log('Nuevo evento:', newEvent);
+validadorFechaInicio(control: AbstractControl): ValidationErrors | null{
+  const fechaInicio = control.value;
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  const [startYear, startMonth, startDay] = fechaInicio.split('-').map(Number)
+  const end = new Date(startYear, startMonth - 1, startDay);
+    // Valida que la fecha de inicio sea posterior a la fecha de hoy
+  return (fechaInicio && (end >= start)) ? null : { fechaInicioInvalida: true };
+}
+
+validadorFechaFin(control: AbstractControl): ValidationErrors | null{
+  const fechaInicio = control.get('fecha')?.value;
+  const fechaFin = control.get('fechaHasta')?.value;
+
+  const start = new Date(fechaInicio);
+  const end = new Date(fechaFin);
+
+    // Valida que la fecha de fin sea posterior a la fecha de inicio
+  return (fechaInicio&& fechaFin && (end >= start)) ? null : { fechaFinInvalida: true };
+}
+
+validadorHora(control: AbstractControl): ValidationErrors | null{
+  const horaInicio = control.get('horaInicio')?.value;
+  const horaFin = control.get('horaFin')?.value;
+
+  const [startHours, startMinutes] = horaInicio.split(':').map(Number);
+  const [endHours, endMinutes] = horaFin.split(':').map(Number);
+  const startTotalMinutes = startHours * 60 + startMinutes;
+  const endTotalMinutes = endHours * 60 + endMinutes;
+
+  //Verifica si la hora final es al menos 20 minutos despues de la hora de inicio
+  return (horaInicio && horaFin && ((endTotalMinutes - startTotalMinutes) >= 15)) ? null: {horaInvalida: true};
+}
+
+//---Agrega un nuevo evento/horario
+  onAddEvent() {
+    const id= this.horariosClases.length + 1;
+    const newEvent: HorarioClase ={
+      id: id,
+      idClase:Number(this.formGroup.value.idClase!),
+      frecuencia: this.formGroup.value.frecuencia!,
+      fecha:this.formGroup.value.fecha!,
+      horaInicio:this.formGroup.value.horaInicio!,
+      horaFin: this.formGroup.value.horaFin!,
+      fechaHasta:this.formGroup.value.fechaHasta!,
+    }
+    
+    //Manejo de errores al crear el evento/horario
+    this.horariosClasesService.addHorario(newEvent).subscribe({
+      next:(data)=>{
+        this.mostrarAlertaOk();
+        this.getData
+        this.eventsServicePlugin.add(this.intercambiarHorarioPorEvento(newEvent));
+        this.setOpen(false); //una vez creada la clase se cierra el modal
+    }, error:(e)=>{
+      this.mostrarAlertaError();
+      console.error(e);
+    }});
+  }
+
+  actualizarFrecuencia() {
+    this.formGroup.controls.frecuencia.setValue(this.selectedFrequency!);
+  }
+
+  actualizarFecha() {
+    this.formGroup.controls.fecha.setValue(this.selectedDateInitial!);
+  }
+  actualizarHoraInicio() {
+    this.formGroup.controls.horaInicio.setValue(this.selectedHourInitial!);
+  }
+  actualizarFechaHasta() {
+    this.formGroup.controls.fechaHasta.setValue(this.selectedDateFinal!);
+  }
+  actualizarHoraFin() {
+    this.formGroup.controls.horaFin.setValue(this.selectedHourFinal!);
+  }
+  //-----Actualiza un evento/horario
+  setUpdateData(selectedHorario:any){
+    this.isUpdate=true
+    this.setOpen(true)
   }
 
   //----Elimina un evento/horario
@@ -289,18 +387,15 @@ async  onDeleteEvent(selectedHorarioId?:number){
   }
 
   deleteEvent(id?: number ){
-    this.isLoading = true
     if(id){
       this.horariosClasesService.deleteHorario(id).subscribe({
         next: (data)=>{
-          this.eventsServicePlugin.remove(id);
+          this.eventsServicePlugin.remove(Number(id));
           console.log(this.horariosClases)
-          this.isLoading  = !this.isLoading;
           this.mostrarAlertaOk();
         }, error:(e)=>{
           this.mostrarAlertaError();
           console.error(e);
-         this.isLoading  = !this.isLoading;
         }
       });
     }
@@ -319,16 +414,20 @@ async  onDeleteEvent(selectedHorarioId?:number){
   //---Abre y cierra el modal
   setOpen(isOpen: boolean) {
     this.isModalOpen = isOpen;
-    if(isOpen && this.selectedDateTime){
-      //Al abrir el modal colocamos la fecha y la hora seleccionada.
-      if(this.selectedDateTime){
-        const [datePart, timePart] = this.selectedDateTime.split(' ')
-        this.selectedDateInitial = datePart;
-        this.selectedDateFinal = datePart;
-        this.selectedHourInitial = timePart;
-        this.selectedHourFinal = timePart;
-      }
-      
+  }
+
+//Coloca la fecha y hora, seleccionada en el horario, en el modal
+  setSelectedTimeInitial(){
+    if(this.selectedDateTime){
+      const [datePart, timePart] = this.selectedDateTime.split(' ')
+      this.selectedDateInitial = datePart;
+      this.selectedDateFinal = datePart;
+      this.selectedHourInitial = timePart;
+      this.selectedHourFinal = timePart;
+      this.actualizarFecha();
+      this.actualizarHoraInicio(); 
+      this.actualizarFechaHasta();
+      this.actualizarHoraFin();
     }
   }
 
@@ -360,9 +459,7 @@ async  onDeleteEvent(selectedHorarioId?:number){
   //Select con autocompletado
   private _filter(value:string):Class[]{
     const filterValue = value.toLocaleLowerCase();
-
-    return this.allClasses.filter(clase => clase.titulo.toLowerCase().includes(filterValue))
-
+    return this.allClasses.filter(clase => clase.titulo.toLowerCase().includes(filterValue));
   }
   /*************************MODAL PARA MOSTRAR EL CALENDARIO*************************/
   async openCalModal(typeOfTimeSelection: string) {
@@ -376,16 +473,20 @@ async  onDeleteEvent(selectedHorarioId?:number){
     const { data } = await modal.onDidDismiss();
     if (data.isTimeSelected) this.setTimeSelected(data);
   }
-
+//Guardamos el tiempo seleccionado en el modal en su correspondiente variable
   setTimeSelected(data:any){
     switch(data.typeOfTimeSelection){
-      case 'selectedDateInitial': this.selectedDateInitial = data.selectedDate
+      case 'selectedDateInitial': this.selectedDateInitial = data.selectedDate;
+                                  this.actualizarFecha();
       break;
-      case 'selectedDateFinal': this.selectedDateFinal = data.selectedDate
+      case 'selectedDateFinal': this.selectedDateFinal = data.selectedDate;
+                                this.actualizarFechaHasta(); 
       break;
-      case 'selectedHourInitial': this.selectedHourInitial = data.selectedHour
+      case 'selectedHourInitial': this.selectedHourInitial = data.selectedHour;
+                                  this.actualizarHoraInicio();
       break;
-      case 'selectedHourFinal': this.selectedHourFinal = data.selectedHour
+      case 'selectedHourFinal': this.selectedHourFinal = data.selectedHour;
+                                this.actualizarHoraFin();
       break;
     }
   }
@@ -412,11 +513,7 @@ async  onDeleteEvent(selectedHorarioId?:number){
   async mostrarAlertaOk(){
     const alert = await this.crearAlert('¡Exito!','La acción se ha producido correctamente.');
     
-    alert.present().then(async () => {
-      setTimeout(()=>{
-        location.reload()
-      }, 1500);
-    });
+    alert.present();
   }
 
   async crearAlert(header: string,mensaje: string){

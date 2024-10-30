@@ -60,7 +60,7 @@ ion-segment-button {
 /*************************************BOTONES DEL MODAL***************************************/
 .close-btn {
   color: #f44336;
-  border:2px solid #f44336;
+  
   border-radius: 20px;
   background-color: transparent;
   font-weight: bold;
@@ -88,6 +88,10 @@ ion-datetime{
   width: 100%;
 }
 
+.validator{
+  color: var(--ion-color-danger);
+  font-size: 0.8rem;
+}
 
 //estilos angular material select autocomplete
 ::ng-deep mat-option.mat-mdc-option { 
@@ -112,6 +116,4 @@ ion-datetime{
   border:none !important;
   box-shadow: 0 0 2em 0.1em #006EFF;
 }
-// input:placeholder-shown {
-//   opacity: 0.5;
-// }
+
