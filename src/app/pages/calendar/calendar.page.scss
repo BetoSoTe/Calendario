@@ -32,7 +32,7 @@ ion-segment-button {
 }
 
 .edit-button { //EDITAR EVENTO
-  color: #05b10b;
+  color: var(--ion-color-primary);
   --background: var(--ion-background-color-step-100);
 }
 

@@ -19,6 +19,10 @@ export class HorariosClasesService {
     return this.http.post<any>(environment.global+'horariosClases', JSON.stringify(horario));
   }
 
+  updateHorario(horario:any){
+    return this.http.put<any>(`${environment.global+'horariosClases'}/${horario.id}`, JSON.stringify(horario));
+  }
+
   deleteHorario(id: number): Observable<any> {
     return this.http.delete<any>(`${environment.global+'horariosClases'}/${id}`);
   }

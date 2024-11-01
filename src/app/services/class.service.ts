@@ -21,7 +21,6 @@ export class ClassService {
   }
 
   updateClass(clase:any){
-    console.log('update',clase)
     return this.http.put<any>(`${environment.global+'classes'}/${clase.id}`, JSON.stringify(clase));
   }
 

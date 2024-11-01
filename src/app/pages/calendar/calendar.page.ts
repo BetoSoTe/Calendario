@@ -18,7 +18,7 @@ import { CalModalPage } from './cal-modal/cal-modal.page';
 
 import { map,startWith } from 'rxjs/operators'
 import { MatAutocompleteModule } from '@angular/material/autocomplete'
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 
 
@@ -41,18 +41,19 @@ export class CalendarPage implements OnInit{
   allClasses: Class[] = [];
   isUpdate:boolean=false;
   //------Formulario
+  private filteredClasesSubject = new BehaviorSubject<Class | null>(null); 
   filteredClases?: Observable<Class[]>;;
   formGroup = new FormGroup({
     id: new FormControl(0,[Validators.required,]),
     idClase: new FormControl('',[Validators.required,this.validadorIdClase.bind(this) ]),
     frecuencia: new FormControl('',[Validators.required,]),
-    fecha: new FormControl('',[Validators.required,this.validadorFechaInicio]),
+    fecha: new FormControl('',[Validators.required,this.validadorFechaInicio.bind(this)]),
     horaInicio: new FormControl('',[Validators.required]),
     fechaHasta: new FormControl('',[Validators.required]),
     horaFin: new FormControl('',[Validators.required]),
   },{validators:[this.validadorFechaFin,this.validadorHora]});
 
-  filteredClass? : Observable<Class | undefined>;
+  filteredClass? = this.filteredClasesSubject.asObservable();
   //-----Modal
   isModalOpen = false;
   name: string = ''; clase: string = ''; //Nombre y Clase
@@ -155,9 +156,9 @@ export class CalendarPage implements OnInit{
         map(value => this._filter(value || ''))
       );
     
-      this.filteredClass = idClaseControl.valueChanges.pipe(
+      idClaseControl.valueChanges.pipe(
         map(value => this.buscarClase(Number(value)))
-      );
+      ).subscribe(clase =>this.filteredClasesSubject.next(clase!))
     }
     
   }
@@ -281,6 +282,7 @@ validadorIdClase(control: AbstractControl): ValidationErrors | null{
 }
 
 validadorFechaInicio(control: AbstractControl): ValidationErrors | null{
+  if(this.isUpdate) return null
   const fechaInicio = control.value;
   const start = new Date();
   start.setHours(0, 0, 0, 0);
@@ -331,7 +333,7 @@ validadorHora(control: AbstractControl): ValidationErrors | null{
     this.horariosClasesService.addHorario(newEvent).subscribe({
       next:(data)=>{
         this.mostrarAlertaOk();
-        this.getData
+        this.getData();
         this.eventsServicePlugin.add(this.intercambiarHorarioPorEvento(newEvent));
         this.setOpen(false); //una vez creada la clase se cierra el modal
     }, error:(e)=>{
@@ -339,7 +341,12 @@ validadorHora(control: AbstractControl): ValidationErrors | null{
       console.error(e);
     }});
   }
-
+  actualizarId(id:number){
+    this.formGroup.controls.id.setValue(id!);
+  }
+  actualizarIdClase(id:string){
+    this.formGroup.controls.idClase.setValue(id!);
+  }
   actualizarFrecuencia() {
     this.formGroup.controls.frecuencia.setValue(this.selectedFrequency!);
   }
@@ -356,10 +363,52 @@ validadorHora(control: AbstractControl): ValidationErrors | null{
   actualizarHoraFin() {
     this.formGroup.controls.horaFin.setValue(this.selectedHourFinal!);
   }
-  //-----Actualiza un evento/horario
+  //-----Actualiza los datos en el formulario
   setUpdateData(selectedHorario:any){
-    this.isUpdate=true
-    this.setOpen(true)
+    this.isUpdate = true;
+    this.selectedFrequency = selectedHorario.frecuencia;
+    this.selectedDateInitial = selectedHorario.fecha;
+    this.selectedDateFinal = selectedHorario.fechaHasta;
+    this.selectedHourInitial = selectedHorario.horaInicio;
+    this.selectedHourFinal = selectedHorario.horaFin;
+    this.actualizarId(selectedHorario.id);
+    this.actualizarIdClase(selectedHorario.idClase);
+    this.actualizarFrecuencia();
+    this.actualizarFecha();
+    this.actualizarFechaHasta();
+    this.actualizarHoraInicio();
+    this.actualizarHoraFin();
+    this.asignarValorAFilteredClases(this.buscarClase(Number(selectedHorario.idClase)))
+    this.setOpen(true);
+  }
+//-----Actualiza un evento/horario
+async onUpdateEvent(){
+  const event: HorarioClase ={
+    id: this.formGroup.value.id!,
+    idClase:Number(this.formGroup.value.idClase!),
+    frecuencia: this.formGroup.value.frecuencia!,
+    fecha:this.formGroup.value.fecha!,
+    horaInicio:this.formGroup.value.horaInicio!,
+    horaFin: this.formGroup.value.horaFin!,
+    fechaHasta:this.formGroup.value.fechaHasta!,
+  }
+      this.horariosClasesService.updateHorario(event).subscribe({
+        next: (data)=>{
+          this.mostrarAlertaOk();
+          this.getData();
+          this.eventsServicePlugin.update(this.intercambiarHorarioPorEvento(event));
+          this.setOpen(false);
+
+        }, error:(e)=>{
+          this.mostrarAlertaError();
+          console.error(e);
+        }
+      });
+    
+  }
+//Agrega valor al observable utilizado en el autocomplete para que muestre los datos de la clase que se va a editar
+  asignarValorAFilteredClases(clase?: Class){
+    this.filteredClasesSubject.next(clase!)
   }
 
   //----Elimina un evento/horario
@@ -401,19 +450,20 @@ async  onDeleteEvent(selectedHorarioId?:number){
     }
   }
 
-  confirm() {
-    console.log("Clase: ", this.clase);
-    console.log("Instructor: ", this.name);
-    console.log("Fecha Inicial seleccionada: ", this.selectedDateInitial);
-    console.log("Fecha Final seleccionada: ", this.selectedDateFinal);
-    console.log("Hora Inicialseleccionada: ", this.selectedHourInitial);
-    console.log("Hora Final seleccionada: ", this.selectedHourFinal)
-    this.setOpen(false);
-  }
+  // confirm() {
+  //   console.log("Clase: ", this.clase);
+  //   console.log("Instructor: ", this.name);
+  //   console.log("Fecha Inicial seleccionada: ", this.selectedDateInitial);
+  //   console.log("Fecha Final seleccionada: ", this.selectedDateFinal);
+  //   console.log("Hora Inicialseleccionada: ", this.selectedHourInitial);
+  //   console.log("Hora Final seleccionada: ", this.selectedHourFinal)
+  //   this.setOpen(false);
+  // }
 
   //---Abre y cierra el modal
   setOpen(isOpen: boolean) {
     this.isModalOpen = isOpen;
+    if(!isOpen)this.isUpdate = false;
   }
 
 //Coloca la fecha y hora, seleccionada en el horario, en el modal
@@ -434,9 +484,9 @@ async  onDeleteEvent(selectedHorarioId?:number){
   onModalDidDismiss() {
     this.setOpen(false);
   }
-
+//Limpia los campos del formulario y las variables relacionadas
   reset() {
-    console.log('reset')
+    this.selectedFrequency= '';
     this.selectedDateInitial = '';
     this.selectedDateFinal = '';
     this.selectedHourFinal = '';
@@ -444,6 +494,13 @@ async  onDeleteEvent(selectedHorarioId?:number){
     this.selectedDateTime = '';
     this.clase = '';
     this.name = '';
+    this.actualizarId(0);
+    this.actualizarIdClase('');
+    this.actualizarFrecuencia();
+    this.actualizarFecha();
+    this.actualizarFechaHasta();
+    this.actualizarHoraInicio();
+    this.actualizarHoraFin();
   }
 
   //----Cambia el tipo de vista del calendario
@@ -490,7 +547,7 @@ async  onDeleteEvent(selectedHorarioId?:number){
       break;
     }
   }
-
+//Obtiene el tiempo seleccionado segun si es hora o fecha, inicial o final
   getSelectedTimeInitial(typeOfTimeSelection:string):string{
     const timeInitial: Record<string,string> = {
       selectedDateInitial: this.selectedDateInitial,
@@ -524,5 +581,4 @@ async  onDeleteEvent(selectedHorarioId?:number){
     });
     return alert;
   }
-
 }
