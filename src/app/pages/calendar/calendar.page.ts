@@ -15,7 +15,7 @@ import { Class } from 'src/app/models/class';
 import { createEventRecurrencePlugin, createEventsServicePlugin } from "@schedule-x/event-recurrence";
 import { ModalController } from '@ionic/angular';
 import { CalModalPage } from './cal-modal/cal-modal.page';
-
+import { frecuencias } from 'src/app/enums/frecuencia';
 import { map,startWith } from 'rxjs/operators'
 import { MatAutocompleteModule } from '@angular/material/autocomplete'
 import { Observable, BehaviorSubject } from 'rxjs';
@@ -39,7 +39,11 @@ import { Observable, BehaviorSubject } from 'rxjs';
 export class CalendarPage implements OnInit{
   selectedSegment: string = 'mes';
   allClasses: Class[] = [];
+  horariosClases: HorarioClase[] = [];
   isUpdate:boolean=false;
+  dateSelectWatch: string = '';
+  filteredDateSelectWatch: HorarioClase[] = [];
+  filteredHorariosClases: any[] = [];
   //------Formulario
   private filteredClasesSubject = new BehaviorSubject<Class | null>(null); 
   filteredClases?: Observable<Class[]>;;
@@ -56,7 +60,7 @@ export class CalendarPage implements OnInit{
   filteredClass? = this.filteredClasesSubject.asObservable();
   //-----Modal
   isModalOpen = false;
-  name: string = ''; clase: string = ''; //Nombre y Clase
+  // name: string = ''; clase: string = ''; //Nombre y Clase
   selectedFrequency: string = ''; // Frecuencia seleccionada
   selectedDateInitial: string = ''; // Fecha inicial
   selectedDateFinal: string = ''; // Fecha final
@@ -67,7 +71,7 @@ export class CalendarPage implements OnInit{
   
 
   //---Calendario
-  horariosClases: HorarioClase[] = [];
+  
   events: any[] = [];
   selectedDateTime: string = '';
   calendarControls = createCalendarControlsPlugin();
@@ -115,6 +119,7 @@ export class CalendarPage implements OnInit{
     defaultView: viewMonthGrid.name,
     views: [createViewMonthGrid(),createViewWeek(),createViewDay()],
     locale: 'es-ES',
+    minDate: '2024-01-01',
     calendars: this.calendars,
     monthGridOptions: {
       nEventsPerDay: 5
@@ -127,8 +132,8 @@ export class CalendarPage implements OnInit{
         this.setOpen(true); // Lógica para abrir el modal
       },
       onDoubleClickDate: (dateTime) => {
-        this.selectedDateInitial = dateTime;
-        this.selectedDateFinal = dateTime;
+        this.selectedDateInitial = dateTime.split('T')[0];
+        this.selectedDateFinal = dateTime.split('T')[1];
         this.actualizarFecha();
         this.actualizarFechaHasta(); 
         this.setOpen(true);
@@ -136,7 +141,22 @@ export class CalendarPage implements OnInit{
       onEventClick:(calendarEvent) => {
         this.selectedHorario = this.buscarHorario(Number(calendarEvent.id)) 
         this.selectedClaseHorario = this.buscarClase(this.selectedHorario?.idClase!)
-      }
+      },
+      onClickDate:(date) => { //Se llama al hacer clic en una fecha en la cuadrícula del mes
+        this.dateSelectWatch = date
+        this.calendarControls.setDate(date)//actualiza la fecha seleccionada
+        console.log('onClickDate', date);
+      },
+      onClickDateTime: (dateTime) => { //Se llama al hacer clic en algún lugar de la cuadrícula de tiempo de la vista de semana o día
+        const datePart = dateTime.split(' ')[0]
+        this.dateSelectWatch =  datePart;
+        this.calendarControls.setDate(datePart)//actualiza la fecha seleccionada
+        console.log('onClickDateTime', dateTime);
+      },
+      onSelectedDateUpdate:(date)=> {//Se llamam al actualizar la fecha seleccionada
+        this.dateSelectWatch = date.toString();
+        this.filterDateSelectWatch()
+      },
     }
   })
 
@@ -160,7 +180,7 @@ export class CalendarPage implements OnInit{
         map(value => this.buscarClase(Number(value)))
       ).subscribe(clase =>this.filteredClasesSubject.next(clase!))
     }
-    
+    this.dateSelectWatch = this.calendarControls.getDate();
   }
   
   getData(){
@@ -218,7 +238,7 @@ export class CalendarPage implements OnInit{
     const start = horario.fecha+' '+horario.horaInicio;
     const end = horario.fecha+' '+horario.horaFin;
     //Ponemos la frecuencia como la acepta el calendario
-    if (horario.frecuencia !== "Una vez") evento.rrule = this.intercambiarFrecuencia(horario.frecuencia) +  this.convertirFecha(horario.fechaHasta);
+    if (horario.frecuencia !== frecuencias.UNA_VEZ) evento.rrule = this.intercambiarFrecuencia(horario.frecuencia) +  this.convertirFecha(horario.fechaHasta);
     
     //agregamos los respectivos datos al evento como lo acepta el calendario
     evento.id = Number(horario.id);
@@ -341,6 +361,8 @@ validadorHora(control: AbstractControl): ValidationErrors | null{
       console.error(e);
     }});
   }
+
+  //-----Funciones para actualizar los datos en el formulario
   actualizarId(id:number){
     this.formGroup.controls.id.setValue(id!);
   }
@@ -492,8 +514,8 @@ async  onDeleteEvent(selectedHorarioId?:number){
     this.selectedHourFinal = '';
     this.selectedHourInitial = '';
     this.selectedDateTime = '';
-    this.clase = '';
-    this.name = '';
+    // this.clase = '';
+    // this.name = '';
     this.actualizarId(0);
     this.actualizarIdClase('');
     this.actualizarFrecuencia();
@@ -558,6 +580,42 @@ async  onDeleteEvent(selectedHorarioId?:number){
     }
       
     return timeInitial[typeOfTimeSelection] ?? timeInitial['default']
+  }
+  //------filtra los horarios segun la fecha seleccionada
+  filterDateSelectWatch(){
+    const [selectYear, selectMonth, selectDay] = this.dateSelectWatch.split('-').map(Number);
+    const selectDate = new Date(selectYear, selectMonth - 1,selectDay);
+
+    this.filteredDateSelectWatch = this.horariosClases.filter(({fecha,fechaHasta,frecuencia})=>{
+    const [startYear, startMonth, startDay] = fecha.split('-').map(Number) //separamos el string en año fecha y dia
+    const [endYear, endMonth, endDay] = fechaHasta.split('-').map(Number)
+    
+    const startDate = new Date(startYear, startMonth - 1, startDay);// creamos un date para comparar fechas
+    startDate.setHours(0, 0, 0, 0); //lo ponemos desde la hora inicial del dia
+    const endDate = new Date(endYear, endMonth - 1, endDay);
+    endDate.setHours(23, 59, 59, 999);//lo ponemos hasta la hora final del dia
+    switch(frecuencia){
+      case frecuencias.UNA_VEZ:return (fecha === this.dateSelectWatch) //Verificamos que la fecha de inicio sea igual a la fecha seleccionada
+      case frecuencias.DIARIO: return(startDate <= selectDate && selectDate <= endDate) // verificamos que la fecha seleccionada este entre la fecha de inicio y la ficha final
+      case frecuencias.MENSUAL: return(startDate <= selectDate && selectDate <= endDate && selectDay === startDay) //verificamos que coincida el mismo numero de dia entre la fecha seleccionada y la fecha de inicio 
+      default: return(startDate <= selectDate && selectDate <= endDate && (startDate.getDay()===selectDate.getDay())) // verificamos que coincida con los dias de la semana entre la fecha seleccionada y la fecha de inicio
+    }
+    })
+    this.filteredHorariosClases = this.filteredDateSelectWatch.map(horario =>{
+      const clase = this.buscarClase(horario.idClase)
+      return {
+        id:horario.id,
+        titulo: clase?.titulo,
+        instructor: clase?.instructor,
+        club:clase?.club,
+        frecuencia:horario.frecuencia,
+        fechaInicio: horario.fecha,
+        fechaFin: horario.fechaHasta,
+        horaInicio: horario.horaInicio,
+        horaFin: horario.horaFin,
+      }
+    })
+    console.log(this.filteredHorariosClases)
   }
 
   ///----Manejo de alertas----//

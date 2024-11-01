@@ -271,5 +271,11 @@
     
     </ng-template>
   </ion-modal>
+  <!--Donde se muestra la información de la clase y del dia a realizar!-->
+  <div class="visual">
+    <p class="inline-cont">Dia seleccionado:</p>
+    <p *ngIf="dateSelectWatch" class="inline-cont font">{{dateSelectWatch}}</p>
+    <p>Clases: </p>
+  </div>
 
 </ion-content>
