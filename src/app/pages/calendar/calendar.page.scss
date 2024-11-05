@@ -20,6 +20,23 @@ ion-segment-button {
 .modal-cal {
   --width: 50%;
 }
+
+.spinner{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  background-color: rgba(255, 255, 255, 0.4); /* Fondo semi-transparente */
+  z-index: 10; /* Para que esté por encima del contenido */
+
+  ion-spinner {
+    color: var(--ion-color-dark);
+  }
+}
 /*************************************BOTONES DE LOS EVENTOS***************************************/
 .create-button{ //CREAR EVENTO
   color: var(--ion-color-primary);

@@ -2,7 +2,7 @@ import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule, DATE_PIPE_DEFAULT_OPTIONS } from '@angular/common';
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonDatetime, IonIcon, IonSegment, IonSegmentButton, IonLabel, IonButton, IonModal, 
-  IonButtons, IonItem, IonInput, IonList, IonText, AlertController, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
+  IonButtons, IonItem, IonInput, IonList, IonText, AlertController, IonSelect, IonSelectOption, IonMenuButton } from '@ionic/angular/standalone';
 import { createCalendar, createViewWeek, createViewDay, createViewMonthGrid, viewMonthGrid, CalendarEvent} from "@schedule-x/calendar";
 import { CalendarComponent } from "@schedule-x/angular";
 import { createCalendarControlsPlugin } from '@schedule-x/calendar-controls'
@@ -28,7 +28,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
   styleUrls: ['./calendar.page.scss'],
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [IonText, IonList, IonInput, IonItem,
+  imports: [IonText, IonList, IonInput, IonItem,IonMenuButton,
             IonButtons, IonModal, IonButton, IonLabel,
             IonSegmentButton, IonSegment, IonIcon, IonDatetime, 
             IonContent, IonHeader, IonTitle, IonToolbar,
@@ -44,6 +44,7 @@ export class CalendarPage implements OnInit{
   dateSelectWatch: string = '';
   filteredDateSelectWatch: HorarioClase[] = [];
   filteredHorariosClases: any[] = [];
+  isLoading:boolean = true; 
   //------Formulario
   private filteredClasesSubject = new BehaviorSubject<Class | null>(null); 
   filteredClases?: Observable<Class[]>;;
@@ -191,6 +192,7 @@ export class CalendarPage implements OnInit{
       },
       error: (e) => {
         console.error(e);
+        this.isLoading = false
       }
     })
   }
@@ -201,9 +203,12 @@ export class CalendarPage implements OnInit{
         this.allClasses = data; 
         this.intercambiarHorariosPorEventos();
         this.eventsServicePlugin.set(this.events);
+        this.filterDateSelectWatch()
+        this.isLoading = false
       },
       error: (e) =>{
         console.error(e)
+        this.isLoading = false
       }
     })
   }
@@ -600,6 +605,7 @@ async  onDeleteEvent(selectedHorarioId?:number){
       case frecuencias.MENSUAL: return(startDate <= selectDate && selectDate <= endDate && selectDay === startDay) //verificamos que coincida el mismo numero de dia entre la fecha seleccionada y la fecha de inicio 
       default: return(startDate <= selectDate && selectDate <= endDate && (startDate.getDay()===selectDate.getDay())) // verificamos que coincida con los dias de la semana entre la fecha seleccionada y la fecha de inicio
     }
+
     })
     this.filteredHorariosClases = this.filteredDateSelectWatch.map(horario =>{
       const clase = this.buscarClase(horario.idClase)
@@ -614,11 +620,9 @@ async  onDeleteEvent(selectedHorarioId?:number){
         fechaHasta: horario.fechaHasta,
         horaInicio: horario.horaInicio,
         horaFin: horario.horaFin,
-        
       }
     })
     
-    //console.log(this.filteredHorariosClases)
   }
 
   ///----Manejo de alertas----//
@@ -644,10 +648,6 @@ async  onDeleteEvent(selectedHorarioId?:number){
   }
 
   SetUpdataFromList(horario:any){
-    //const horario = this.buscarHorario(id);
-    //console.log("id",id);
-    console.log(horario);
-    console.log(this.horariosClases);
     this.setUpdateData(horario);
   }
 }

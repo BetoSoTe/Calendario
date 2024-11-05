@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonText, IonLabel, IonCard, IonRow, IonCol, IonItem, IonSearchbar, IonIcon,
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonText, IonLabel, IonCard, IonRow, IonCol, IonItem, IonSearchbar, IonIcon,IonButtons,IonMenuButton,
    ModalController, AlertController } from '@ionic/angular/standalone';
 import { ClassService } from 'src/app/services/class.service';
 import { Class } from 'src/app/models/class';
@@ -13,7 +13,7 @@ import { AddUpdateClassPage } from './add-update-class/add-update-class.page';
   styleUrls: ['./class.page.scss'],
   standalone: true,
   imports: [IonIcon, IonCard, IonLabel, IonText, IonButton, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonRow, IonCol, IonItem, 
-    IonSearchbar]
+    IonSearchbar, IonButtons,IonMenuButton]
 })
 export class ClassPage implements OnInit {
   allClasses: Class[] = [];

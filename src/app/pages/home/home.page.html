@@ -1,8 +1,24 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
     <ion-title>Inicio</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  
+    <ion-title class="title">Bienvenido</ion-title>
+    <p class="text" >Selecciona una opción.</p>
+  <ion-list >
+    @for(page of pages; track $index ){
+    <ion-item
+          class="link"
+          (click)="onItemTap(page)">
+      <ion-label>{{page.title}}</ion-label>
+    </ion-item>
+  }
+  </ion-list>
+ 
 </ion-content>
