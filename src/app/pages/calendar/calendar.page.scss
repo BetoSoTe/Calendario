@@ -128,5 +128,25 @@ ion-datetime{
 }
 
 .visual{
-  background-color: #05b10b;
+  background-color: #000000;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #0da7ce;
+  font-weight: bold;
+}
+
+tr:hover {
+  background-color: #9e8b20;
 }

@@ -273,9 +273,39 @@
   </ion-modal>
   <!--Donde se muestra la información de la clase y del dia a realizar!-->
   <div class="visual">
-    <p class="inline-cont">Dia seleccionado:</p>
+    <p class="inline-cont">Clases del día: </p>
     <p *ngIf="dateSelectWatch" class="inline-cont font">{{dateSelectWatch}}</p>
-    <p>Clases: </p>
+    <table *ngIf="filteredHorariosClases && filteredHorariosClases.length > 0">
+      <thead>
+        <tr>
+          <th>Clase</th>
+          <th>Instructor</th>
+          <th>Club</th>
+          <th>Hora Inicio</th>
+          <th>Hora Final</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let horario of filteredHorariosClases">
+          <td>{{horario.titulo}}</td>
+          <td>{{horario.instructor}}</td>
+          <td>{{horario.club}}</td>
+          <td>{{horario.horaInicio}}</td>
+          <td>{{horario.horaFin}}</td>
+          <td>
+            <ion-button class="edit-button" fill="Clear" (click)="SetUpdataFromList(horario)">
+              <ion-icon slot="start" name="create-outline"></ion-icon>
+              Editar
+            </ion-button>
+            <ion-button class="cancel-button" fill="Clear" (click)="onDeleteEvent(selectedHorario?.id)">
+              <ion-icon slot="start" name="trash-outline"></ion-icon>
+              Eliminar
+            </ion-button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p *ngIf="filteredHorariosClases && filteredHorariosClases.length === 0">No hay clases disponibles para este día.</p>
   </div>
-
 </ion-content>

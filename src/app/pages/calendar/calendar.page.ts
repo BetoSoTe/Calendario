@@ -68,7 +68,7 @@ export class CalendarPage implements OnInit{
   selectedHourFinal: string = ''; // Hora final
   selectedHorario?: HorarioClase;
   selectedClaseHorario?: Class;
-  
+  nameClass: string = '';
 
   //---Calendario
   
@@ -156,7 +156,7 @@ export class CalendarPage implements OnInit{
       onSelectedDateUpdate:(date)=> {//Se llamam al actualizar la fecha seleccionada
         this.dateSelectWatch = date.toString();
         this.filterDateSelectWatch()
-      },
+      }
     }
   })
 
@@ -605,17 +605,20 @@ async  onDeleteEvent(selectedHorarioId?:number){
       const clase = this.buscarClase(horario.idClase)
       return {
         id:horario.id,
+        idClase: clase?.id,
         titulo: clase?.titulo,
         instructor: clase?.instructor,
         club:clase?.club,
         frecuencia:horario.frecuencia,
-        fechaInicio: horario.fecha,
-        fechaFin: horario.fechaHasta,
+        fecha: horario.fecha,
+        fechaHasta: horario.fechaHasta,
         horaInicio: horario.horaInicio,
         horaFin: horario.horaFin,
+        
       }
     })
-    console.log(this.filteredHorariosClases)
+    
+    //console.log(this.filteredHorariosClases)
   }
 
   ///----Manejo de alertas----//
@@ -638,5 +641,13 @@ async  onDeleteEvent(selectedHorarioId?:number){
       buttons: ['OK']
     });
     return alert;
+  }
+
+  SetUpdataFromList(horario:any){
+    //const horario = this.buscarHorario(id);
+    //console.log("id",id);
+    console.log(horario);
+    console.log(this.horariosClases);
+    this.setUpdateData(horario);
   }
 }
